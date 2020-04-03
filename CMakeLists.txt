@@ -19,4 +19,5 @@ add_executable(renju
         renju/printchessboard.h
         renju/searchmove.cpp
         renju/searchmove.h
-        renju/start.cpp)
+        renju/start.cpp
+        )

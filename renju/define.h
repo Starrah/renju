@@ -1,3 +1,5 @@
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "modernize-deprecated-headers"
 
 #ifndef _DEFINE_
 #define _DEFINE_
@@ -20,7 +22,13 @@ using namespace std;
 
 #define GRID_NUM 16	//棋盘规模	
 extern int chessBoard[GRID_NUM][GRID_NUM]; //棋盘
-bool gameover(struct point node, int player); //判断是否游戏结束
+int gameover(); //判断是否游戏结束
+
+struct Point{
+    int x;
+    int y;
+    Point(int t_x, int t_y);
+};
+
+extern int currentPlayer;//1表示黑棋（电脑），2表示白棋（玩家）
 #endif
-
-

@@ -1,5 +1,6 @@
 #include "define.h"
-bool gameover()//判断是否游戏结束
+int gameover()//判断是否游戏结束，未结束返回0，已结束返回1或2表示胜利的一方
 {
-	return true;
+    //TODO
+	return 0;
 }

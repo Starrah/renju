@@ -5,6 +5,6 @@
 #include "printchessboard.h"
 int searchMove() //ËÑË÷º¯ÊıÖ÷Ìå
 {
-
+    //TODO
 	return 0;
 }

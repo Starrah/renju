@@ -4,8 +4,12 @@
 
 #include "define.h"
 
-bool makeMove();//执行走法
+bool makeMove(Point p, int player);//执行走法
 
 void unMakeMove();//撤销走法
+
+Point getMoveFromConsole();
+
+Point getMoveFromAI();
 
 #endif
