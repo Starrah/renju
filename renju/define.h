@@ -12,6 +12,8 @@
 #include <iostream>
 #include <algorithm>
 #include <ctime>
+#include <vector>
+
 using namespace std;
 
 #define blank 0		//空白点
@@ -23,12 +25,17 @@ using namespace std;
 #define GRID_NUM 16	//棋盘规模	
 extern int chessBoard[GRID_NUM][GRID_NUM]; //棋盘
 int gameover(); //判断是否游戏结束
+extern int _continuousPiecesCount[3];//第i个元素表示玩家i当前在棋盘上最长连珠的长度。
+void updateContinuousPieceCount();
 
 struct Point{
     int x;
     int y;
     Point(int t_x, int t_y);
+    Point();
 };
 
 extern int currentPlayer;//1表示黑棋（电脑），2表示白棋（玩家）
+
+extern vector<pair<int, Point>> history;//列表表示下棋历史记录，每个元素是pair，first表示下棋的玩家，second表示下棋的位置
 #endif

@@ -33,9 +33,10 @@ int main()
     int gameOverValue = 0;
     do {
         int nowPlayer = currentPlayer;
-        Point playPoint = currentPlayer == black? getMoveFromAI(): getMoveFromConsole();
-        bool moveResult = makeMove(playPoint, currentPlayer);
+        Point playPoint;
         while (true) {
+            playPoint = currentPlayer == black? getMoveFromAI(): getMoveFromConsole();
+            bool moveResult = makeMove(playPoint, currentPlayer);
             if (moveResult) break;
             else {
                 cout << "落子不合法！可能是x、y超出有效范围，x、y需要介于1至"

@@ -8,7 +8,9 @@ using namespace std;
 bool makeMove(Point p, int player) {
     if(player == currentPlayer && inboard(p.x, p.y) && chessBoard[p.x][p.y] == blank){
         chessBoard[p.x][p.y] = currentPlayer;
-        currentPlayer = currentPlayer == 1? 2: 1;
+        history.emplace_back(currentPlayer, p);
+        updateContinuousPieceCount();
+        currentPlayer = currentPlayer == black? white: black;
         return true;
     }
     else return false;
@@ -37,5 +39,6 @@ Point getMoveFromConsole() {
 
 Point getMoveFromAI() {
     //TODO
-    return {0, 0};
+    return getMoveFromConsole();
 }
+

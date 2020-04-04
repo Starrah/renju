@@ -44,9 +44,9 @@ void print() //棋盘打印
 			}
 
 			if (chessBoard[i][j] == 1) //此处为黑子
-				printf("○ ");
-			else if (chessBoard[i][j] == 2) //此处为白子
 				printf("● ");
+			else if (chessBoard[i][j] == 2) //此处为白子
+				printf("○ ");
 			else
 			{
 				judge(i, j);

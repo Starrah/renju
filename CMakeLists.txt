@@ -21,3 +21,5 @@ add_executable(renju
         renju/searchmove.h
         renju/start.cpp
         )
+
+target_link_libraries(renju)
