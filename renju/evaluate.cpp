@@ -1,9 +1,9 @@
 #include "define.h"
 
-int evaluate()//估值算法，返回估值
+double evaluate(int board[GRID_NUM][GRID_NUM])//估值算法，返回估值：浮点数，越大表示黑方越好。
 {
 	
-	return  0;
+	return  0.0;
 }
 //由于五子棋搜索分支庞大，通常无法直接搜索到胜负终局，当搜索到一定深度时需要根据局面返回搜索结果。
 //参考资料：
