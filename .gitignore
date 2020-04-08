@@ -5,3 +5,6 @@ Debug
 Release
 /.idea/
 cmake-build-*
+/CMakeSettings.json
+/out/
+/.vscode/

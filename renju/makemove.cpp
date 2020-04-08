@@ -1,5 +1,5 @@
 #include "define.h"
-#include "printchessboard.h"
+#include "searchmove.h"
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -10,7 +10,7 @@ bool makeMove(Point p, int player) {
         chessBoard[p.x][p.y] = currentPlayer;
         history.emplace_back(currentPlayer, p);
         updateContinuousPieceCount();
-        currentPlayer = currentPlayer == black? white: black;
+        currentPlayer = oppositePlayer(currentPlayer);
         return true;
     }
     else return false;
@@ -38,7 +38,6 @@ Point getMoveFromConsole() {
 }
 
 Point getMoveFromAI() {
-    //TODO
-    return getMoveFromConsole();
+    return searchMove();
 }
 

@@ -14,6 +14,16 @@
 #include <ctime>
 #include <vector>
 
+#include <cassert>
+
+//assert_debug宏仅当DEBUG模式下编译为assert，否则不执行任何动作
+#if defined(_DEBUG) || defined(_GLIBCXX_DEBUG_ASSERT)
+#define assert_debug(_Expression) assert(_Expression)
+#define _DEBUG
+#else
+#define assert_debug(_Expression)
+#endif
+
 using namespace std;
 
 #define blank 0		//空白点
@@ -21,6 +31,8 @@ using namespace std;
 #define white 2		//白方
 #define inf 1000000		
 #define inboard(a,b) (a>0 && a<=15 && b>0 && b<=15)		//用于检验招法是否在棋盘上
+
+#define oppositePlayer(a) (a == black? white: black)
 
 #define GRID_NUM 16	//棋盘规模	
 extern int chessBoard[GRID_NUM][GRID_NUM]; //棋盘

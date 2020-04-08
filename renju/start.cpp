@@ -2,6 +2,7 @@
 #include "searchmove.h"
 #include "printchessboard.h"
 #include "makemove.h"
+
 int main()
 {
 	cout << "*************五子棋人机对弈AI*************" << endl;
