@@ -16,14 +16,6 @@
 
 #include <cassert>
 
-//assert_debug宏仅当DEBUG模式下编译为assert，否则不执行任何动作
-#if defined(_DEBUG) || defined(_GLIBCXX_DEBUG_ASSERT)
-#define assert_debug(_Expression) assert(_Expression)
-#define _DEBUG
-#else
-#define assert_debug(_Expression)
-#endif
-
 using namespace std;
 
 #define blank 0		//空白点

@@ -3,6 +3,8 @@
 #include "evaluate.h"
 #include <cfloat>
 
+//#define PRINT_STEP_LOG
+
 struct SearchStepResult {
     double evaScore;
     LegalMove move;
@@ -16,11 +18,11 @@ public:
     vector<LegalMove> &playHistory;
 
     inline void putChess(const LegalMove &move) {
-        assert_debug(board[move.p.x][move.p.y] == blank);
+        assert(board[move.p.x][move.p.y] == blank);
         board[move.p.x][move.p.y] = player;
         playHistory.push_back(move);
         auto count_removed = legalMoves.erase(move);
-        assert_debug(count_removed);
+        assert(count_removed);
         player = oppositePlayer(player);
     }
 
@@ -28,14 +30,14 @@ public:
         player = oppositePlayer(player);
         LegalMove& move = playHistory[playHistory.size() - 1];
         auto add_res = legalMoves.insert(move);
-        assert_debug(add_res.second);
+        assert(add_res.second);
         playHistory.pop_back();
-        assert_debug(board[move.p.x][move.p.y] == player);
+        assert(board[move.p.x][move.p.y] == player);
         board[move.p.x][move.p.y] = blank;
     }
 };
 
-#define MAX_DEPTH_FIXED 5
+#define MAX_DEPTH_FIXED 4
 
 inline bool cutoffTest(const GameFullStatus &status, const int &depth, const double &alpha, const double &beta) {
     return depth >= MAX_DEPTH_FIXED;
@@ -49,7 +51,7 @@ inline bool stopSearchSiblingsTest(const SearchStepResult &curResult, const Sear
 
 inline void printLogWhenDebug(const GameFullStatus &status, const int &depth, const double &alpha, const double &beta,
                               const SearchStepResult &result) {
-#ifdef _DEBUG
+#if !defined(NDEBUG) && defined(PRINT_STEP_LOG)
     cout << depth << "\t" << (status.player == black ? "black" : "white") << "\t";
     if (result.move.p.x == 0) {
         cout << "Evaluat" << "\t";
@@ -76,7 +78,8 @@ SearchStepResult searchStep(GameFullStatus &status, int depth, double alpha, dou
     SearchStepResult bestResult = SearchStepResult{status.player == black ? DBL_MIN : DBL_MAX,
                                                    LegalMove{Point(0, 0), 0}};
     if (status.player == black) {
-        for (const LegalMove &move: status.legalMoves) {
+        set<LegalMove> legalMoves = status.legalMoves;
+        for (const LegalMove &move: legalMoves) {
             status.putChess(move);
             auto res = searchStep(status, depth + 1, alpha, beta);
             SearchStepResult curResult = {res.evaScore, move};
@@ -90,7 +93,8 @@ SearchStepResult searchStep(GameFullStatus &status, int depth, double alpha, dou
             }
         }
     } else if (status.player == white) {
-        for (const LegalMove &move: status.legalMoves) {
+        set<LegalMove> legalMoves = status.legalMoves;
+        for (const LegalMove &move: legalMoves) {
             status.putChess(move);
             auto res = searchStep(status, depth + 1, alpha, beta);
             SearchStepResult curResult = {res.evaScore, move};

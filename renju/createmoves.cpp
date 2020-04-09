@@ -14,7 +14,7 @@ set<LegalMove> createMoves() //生成全部合法走法集
             if (chessBoard[i][j] == blank) {
                 Point p = Point(i, j);
                 auto insRes = result.insert(LegalMove{p, LegalMove::getPriority(p, center)});
-                assert_debug(insRes.second);
+                assert(insRes.second);
             }
         }
     }
