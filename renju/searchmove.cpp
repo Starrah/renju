@@ -1,52 +1,30 @@
 #include "define.h"
-#include "createmoves.h"
 #include "evaluate.h"
+#include "searchmove.h"
 #include <cfloat>
+//两个内联函数体
+#include "stopSearchSiblingsTest.h"
+#include "cutoffTest.h"
 
 //#define PRINT_STEP_LOG
 
-struct SearchStepResult {
-    double evaScore;
-    LegalMove move;
-};
-
-class GameFullStatus {
-public:
-    int player;
-    int (*board)[GRID_NUM];
-    set<LegalMove> &legalMoves;
-    vector<LegalMove> &playHistory;
-
-    inline void putChess(const LegalMove &move) {
-        assert(board[move.p.x][move.p.y] == blank);
-        board[move.p.x][move.p.y] = player;
-        playHistory.push_back(move);
-        auto count_removed = legalMoves.erase(move);
-        assert(count_removed);
-        player = oppositePlayer(player);
-    }
-
-    inline void unputChess() {
-        player = oppositePlayer(player);
-        LegalMove& move = playHistory[playHistory.size() - 1];
-        auto add_res = legalMoves.insert(move);
-        assert(add_res.second);
-        playHistory.pop_back();
-        assert(board[move.p.x][move.p.y] == player);
-        board[move.p.x][move.p.y] = blank;
-    }
-};
-
-#define MAX_DEPTH_FIXED 4
-
-inline bool cutoffTest(const GameFullStatus &status, const int &depth, const double &alpha, const double &beta) {
-    return depth >= MAX_DEPTH_FIXED;
+bool GameFullStatus::putChess(const LegalMove &move) {
+    if (board[move.p.x][move.p.y] != blank) return false;
+    board[move.p.x][move.p.y] = player;
+    playHistory.emplace_back(player, move.p);
+    player = oppositePlayer(player);
+    return true;
 }
 
-inline bool stopSearchSiblingsTest(const SearchStepResult &curResult, const SearchStepResult &bestResult,
-                                   const GameFullStatus &status, const int &depth, const double &alpha,
-                                   const double &beta) {
-    return status.player == black ? (bestResult.evaScore >= beta) : (bestResult.evaScore <= alpha);
+bool GameFullStatus::unputChess(const LegalMove &move) {
+    if (board[move.p.x][move.p.y] != oppositePlayer(player)) return false;
+    player = oppositePlayer(player);
+    assert(playHistory[playHistory.size() - 1].first == player &&
+           playHistory[playHistory.size() - 1].second.x == move.p.x &&
+           playHistory[playHistory.size() - 1].second.y == move.p.y);
+    playHistory.pop_back();
+    board[move.p.x][move.p.y] = blank;
+    return true;
 }
 
 inline void printLogWhenDebug(const GameFullStatus &status, const int &depth, const double &alpha, const double &beta,
@@ -68,6 +46,15 @@ double fakeEvaluate(int board[GRID_NUM][GRID_NUM])//估值算法，返回估值：浮点数，
     return rand();
 }
 
+inline void make_centers(vector<Point> &result, const GameFullStatus &status, const int &count) {
+    int size = status.playHistory.size();
+    for (int index = size - 1; size - 1 - index < count && index >= 0; index--) {
+        result.push_back(status.playHistory[index].second);
+    }
+}
+
+#define CENTER_USED_COUNT 2
+
 SearchStepResult searchStep(GameFullStatus &status, int depth, double alpha, double beta) {
     if (cutoffTest(status, depth, alpha, beta)) {
         double evaScore = fakeEvaluate(status.board);
@@ -77,8 +64,10 @@ SearchStepResult searchStep(GameFullStatus &status, int depth, double alpha, dou
     }
     SearchStepResult bestResult = SearchStepResult{status.player == black ? DBL_MIN : DBL_MAX,
                                                    LegalMove{Point(0, 0), 0}};
+    vector<Point> centers;
+    make_centers(centers, status, CENTER_USED_COUNT);
+    vector<LegalMove> legalMoves = createMoves(status.board, centers);
     if (status.player == black) {
-        set<LegalMove> legalMoves = status.legalMoves;
         for (const LegalMove &move: legalMoves) {
             status.putChess(move);
             auto res = searchStep(status, depth + 1, alpha, beta);
@@ -87,13 +76,12 @@ SearchStepResult searchStep(GameFullStatus &status, int depth, double alpha, dou
                 bestResult = curResult;
                 alpha = max(alpha, bestResult.evaScore);
             }
-            status.unputChess();
+            status.unputChess(move);
             if (stopSearchSiblingsTest(curResult, bestResult, status, depth, alpha, beta)) {
                 break;
             }
         }
     } else if (status.player == white) {
-        set<LegalMove> legalMoves = status.legalMoves;
         for (const LegalMove &move: legalMoves) {
             status.putChess(move);
             auto res = searchStep(status, depth + 1, alpha, beta);
@@ -102,7 +90,7 @@ SearchStepResult searchStep(GameFullStatus &status, int depth, double alpha, dou
                 bestResult = curResult;
                 beta = min(beta, bestResult.evaScore);
             }
-            status.unputChess();
+            status.unputChess(move);
             if (stopSearchSiblingsTest(curResult, bestResult, status, depth, alpha, beta)) {
                 break;
             }
@@ -116,10 +104,10 @@ Point searchMove() //搜索函数主体
 {
     int board[GRID_NUM][GRID_NUM];
     memcpy(board, chessBoard, sizeof(int) * GRID_NUM * GRID_NUM);
-    auto legalMoves = createMoves();
-    vector<LegalMove> fakeHistory; //搜索过程中的推演过程的下棋记录，非真实棋盘的记录。
-    GameFullStatus fullStatus{currentPlayer, board, legalMoves, fakeHistory};
+    vector<pair<int, Point>> fakeHistory = history; //搜索过程中的推演过程的下棋记录，非真实棋盘的记录。
+    GameFullStatus fullStatus{currentPlayer, board, fakeHistory};
 
     auto finalRes = searchStep(fullStatus, 0, DBL_MIN, DBL_MAX);
     return finalRes.move.p;
 }
+

@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <ctime>
 #include <vector>
+#include <set>
 
 #include <cassert>
 
@@ -37,9 +38,13 @@ struct Point{
     int y;
     Point(int t_x, int t_y);
     Point();
+    inline bool operator<(const Point& other) const {
+        return x != other.x? x < other.x: y < other.y;
+    }
 };
 
 extern int currentPlayer;//1表示黑棋（电脑），2表示白棋（玩家）
 
 extern vector<pair<int, Point>> history;//列表表示下棋历史记录，每个元素是pair，first表示下棋的玩家，second表示下棋的位置
+extern set<Point> emptyPlaces;
 #endif

@@ -9,6 +9,8 @@ bool makeMove(Point p, int player) {
     if(player == currentPlayer && inboard(p.x, p.y) && chessBoard[p.x][p.y] == blank){
         chessBoard[p.x][p.y] = currentPlayer;
         history.emplace_back(currentPlayer, p);
+        auto erasedCount = emptyPlaces.erase(p);
+        assert(erasedCount);
         updateContinuousPieceCount();
         currentPlayer = oppositePlayer(currentPlayer);
         return true;
