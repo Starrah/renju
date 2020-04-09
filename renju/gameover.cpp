@@ -1,6 +1,8 @@
 #include "define.h"
 int gameover()//判断是否游戏结束，未结束返回0，已结束返回1或2表示胜利的一方
 {
+    //如果没有空位置了，就是和棋
+    if (emptyPlaces.empty()) return draw;
     // 由于_continuousPiecesCount[0]恒等于4，因此max_element返回非0的位置，
     // 当且仅当_continuousPiecesCount[1]或[2]>=5，也就是游戏应当结束。
     int* maxPointer = std::max_element(_continuousPiecesCount, _continuousPiecesCount + 3);

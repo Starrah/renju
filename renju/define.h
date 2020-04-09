@@ -22,6 +22,7 @@ using namespace std;
 #define blank 0		//空白点
 #define black 1		//黑方
 #define white 2		//白方
+#define draw 3      //和棋
 #define inf 1000000		
 #define inboard(a,b) (a>0 && a<=15 && b>0 && b<=15)		//用于检验招法是否在棋盘上
 
@@ -47,4 +48,6 @@ extern int currentPlayer;//1表示黑棋（电脑），2表示白棋（玩家）
 
 extern vector<pair<int, Point>> history;//列表表示下棋历史记录，每个元素是pair，first表示下棋的玩家，second表示下棋的位置
 extern set<Point> emptyPlaces;
+
+void initializeGame();
 #endif

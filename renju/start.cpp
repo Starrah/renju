@@ -3,30 +3,28 @@
 #include "printchessboard.h"
 #include "makemove.h"
 
-int main()
-{
-	cout << "*************五子棋人机对弈AI*************" << endl;
-	cout << "输入: newblack  电脑先手" << endl;
-	cout << "输入: newwhite  电脑后手" << endl;
-	//设置先手
+int main() {
+    cout << "*************五子棋人机对弈AI*************" << endl;
+    cout << "输入: newblack  电脑先手" << endl;
+    cout << "输入: newwhite  电脑后手" << endl;
+    //设置先手
     while (true) {
         string setting;
         getline(cin, setting);
-        if (setting.find("newblack") != string::npos){
+        if (setting.find("newblack") != string::npos) {
             currentPlayer = black;
             break;
-        }
-        else if (setting.find("newwhite") != string::npos){
+        } else if (setting.find("newwhite") != string::npos) {
             currentPlayer = white;
             break;
-        }
-        else {
+        } else {
             cout << "输入的先手参数不正确。请输入\"newblack\"或\"newwhite\"。" << endl;
             continue;
         }
     }
 
     system("cls");
+    initializeGame();
     cout << "输入: move x y  表示落子点" << endl;
     print();
 
@@ -36,7 +34,7 @@ int main()
         int nowPlayer = currentPlayer;
         Point playPoint;
         while (true) {
-            playPoint = currentPlayer == black? getMoveFromAI(): getMoveFromConsole();
+            playPoint = currentPlayer == black ? getMoveFromAI() : getMoveFromConsole();
             bool moveResult = makeMove(playPoint, currentPlayer);
             if (moveResult) break;
             else {
@@ -48,10 +46,10 @@ int main()
         system("cls");
         cout << "输入: move x y  表示落子点" << endl;
         print();
-        cout << (nowPlayer == black? "电脑": "玩家") << "刚刚下了位置("
-            << playPoint.x << ", " << playPoint.y << ")" << endl;
+        cout << (nowPlayer == black ? "电脑" : "玩家") << "刚刚下了位置("
+             << playPoint.x << ", " << playPoint.y << ")" << endl;
         gameOverValue = gameover();
     } while (gameOverValue == 0);
 
-    cout << "游戏结束！恭喜" << (gameOverValue == black? "电脑": "玩家") << "获胜！" << endl;
+    cout << "游戏结束！" << (gameOverValue == draw ? "和棋！" : (gameOverValue == black ? "恭喜电脑获胜！" : "恭喜玩家获胜！")) << endl;
 }

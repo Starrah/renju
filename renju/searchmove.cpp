@@ -69,28 +69,30 @@ SearchStepResult searchStep(GameFullStatus &status, int depth, double alpha, dou
     vector<LegalMove> legalMoves = createMoves(status.board, centers);
     if (status.player == black) {
         for (const LegalMove &move: legalMoves) {
-            status.putChess(move);
+            if(!status.putChess(move)) continue;
             auto res = searchStep(status, depth + 1, alpha, beta);
             SearchStepResult curResult = {res.evaScore, move};
             if (curResult.evaScore > bestResult.evaScore) {
                 bestResult = curResult;
                 alpha = max(alpha, bestResult.evaScore);
             }
-            status.unputChess(move);
+            bool r = status.unputChess(move);
+            assert(r);
             if (stopSearchSiblingsTest(curResult, bestResult, status, depth, alpha, beta)) {
                 break;
             }
         }
     } else if (status.player == white) {
         for (const LegalMove &move: legalMoves) {
-            status.putChess(move);
+            if(!status.putChess(move)) continue;
             auto res = searchStep(status, depth + 1, alpha, beta);
             SearchStepResult curResult = {res.evaScore, move};
             if (curResult.evaScore < bestResult.evaScore) {
                 bestResult = curResult;
                 beta = min(beta, bestResult.evaScore);
             }
-            status.unputChess(move);
+            bool r = status.unputChess(move);
+            assert(r);
             if (stopSearchSiblingsTest(curResult, bestResult, status, depth, alpha, beta)) {
                 break;
             }
