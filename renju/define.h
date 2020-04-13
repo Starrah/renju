@@ -48,21 +48,21 @@ using namespace std;
 //自己回合有两活三对手无活三或眠三 9000
 //活二 活三 累加
 //TurnFiveScore
-#define TFiveS 10000
+#define TFiveS 1000000000
 //NotTurnFiveScore
-#define NTFiveS -10000
+#define NTFiveS -1000000000
 #define TFourS 9030
 #define NTLFourS -9050
 #define NTSFourS -9040
 #define TSFourALThree 9020
 #define NTLThree -9010
-#define TSFourS 1000
-#define NTLThreeS 1000
-#define TLThreeS 200
-#define NTSThreeS 200
-#define TSThreeS 100
-#define NTTwoS 100
-#define TTwoS 50
+#define TSFourS 400
+#define NTLThreeS 400
+#define TLThreeS 100
+#define NTSThreeS 100
+#define TSThreeS 80
+#define NTTwoS 80
+#define TTwoS 40
 
 
 //方向
