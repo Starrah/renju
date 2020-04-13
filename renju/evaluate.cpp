@@ -1,9 +1,10 @@
 #include "define.h"
 #include "evaluate.h"
 
-int evaluate(int board[GRID_NUM][GRID_NUM], int player)//¹ÀÖµËã·¨£¬·µ»Ø¹ÀÖµ£º¸¡µãÊý£¬Ô½´ó±íÊ¾ºÚ·½Ô½ºÃ¡£
+int evaluate(int board[GRID_NUM][GRID_NUM], int player)//¹ÀÖµËã·¨£¬·µ»Ø¹ÀÖµ£ºÕûÊý£¬Ô½´ó±íÊ¾ºÚ·½Ô½ºÃ¡£
 {
 	reset();
+	//±éÀú
 	 for(int i=1;i<GRID_NUM;i++)
 		 for (int j = 1; j < GRID_NUM; j++)
 		 {
@@ -32,6 +33,7 @@ int evaluate(int board[GRID_NUM][GRID_NUM], int player)//¹ÀÖµËã·¨£¬·µ»Ø¹ÀÖµ£º¸¡µ
 //ÆåÅÌ·¶Î§Îª 1-15
 void evaluatePoint(int board[GRID_NUM][GRID_NUM], int player,int opponent, int p_x,int p_y)
 {
+	//4¸ö·½ÏòÉÏ²éÕÒÆåÐÍ
 	for (int i = 0; i < 4; i++)
 	{
 		if (record[p_x][p_y][i] == 0)
@@ -43,12 +45,14 @@ void evaluatePoint(int board[GRID_NUM][GRID_NUM], int player,int opponent, int p
 
 void reset()
 {
+	//¸üÐÂ¼ÇÂ¼Öµ
 	for(int i=0;i<GRID_NUM;i++)
 		for (int j = 0; j < GRID_NUM; j++)
 			for (int k = 0; k < 4; k++)
 			{
 				record[i][j][k] = 0;
 			}
+	//¸üÐÂÆåÐÍÊý
 	for (int i = 0; i < 8; i++)
 	{
 		black_count[i] = 0;
@@ -56,10 +60,12 @@ void reset()
 	}
 }
 
+//ÐèÒªÅÐ¶ÏµÄ¹Ø¼üÆåÐÍ£ºÁ¬Îå£¬»îËÄ£¬³åËÄ£¬»îÈý£¬ÃßÈý£¬»î¶þ
 void analysisLine(int board[GRID_NUM][GRID_NUM], int player,int opponent, int p_x, int p_y,int dir_idx)
 {
 	int line[9];
 	int count[8] = {0};
+	//µÃµ½Ä³¸ö·½ÏòÉÏµÄÒÔ²éÕÒµãÎªÖÐÐÄµÄ9¸öÆå×Ó
 	getline(board, player, opponent, p_x, p_y, dir_idx, line);
 	int left_index, right_index;
 	left_index = right_index = 4;
@@ -80,39 +86,18 @@ void analysisLine(int board[GRID_NUM][GRID_NUM], int player,int opponent, int p_
 			break;
 		}
 		right_index = right_index + 1;
-	}
-	int left_oppo, right_oppo;
-	left_oppo = left_index;
-	right_oppo = right_index;
-	//µÃµ½×ó±ß×î¿¿½üÖÐÐÄµÄÒ»¸ö·Ç¶Ô·½Æå×ÓµÄÏà¶ÔÎ»ÖÃ
-	while (left_oppo > 0)
-	{
-		if (line[left_oppo - 1] == opponent)
-		{
-			break;
-		}
-		left_oppo -= 1;
-	}
-	//µÃµ½ÓÒ±ß×î¿¿½üÖÐÐÄµÄÒ»¸ö·Ç¶Ô·½Æå×ÓµÄÏà¶ÔÎ»ÖÃ
-	while (right_oppo > 0)
-	{
-		if (line[right_oppo + 1] == opponent)
-		{
-			break;
-		}
-		right_oppo += 1;
-	}
+	} 
 	//¼ÇÂ¼ÒÑ¾­±ê¼Ç¹ýµÄÆå×Ó£¬·ÀÖ¹¼ÇÂ¼ÖØ¸´ÆåÐÍ
 	set_record(board, p_x, p_y, left_index, right_index, dir_idx);
 	//»ñÈ¡Æå×ÓµÄ·¶Î§
-	int range = right_index - left_index + 1;
-	int chess_range = right_oppo - left_oppo + 1;
+	int range = right_index - left_index + 1; 
 	//Á¬Îå£ºMMMMM£¬Ö±½Ó·µ»Ø
 	if (range == 5)
 	{
 		count[Five] += 1;
 	}
     
+	//×óÓÒÊÇ·ñÎª¿Õ
 	bool left_empty,right_empty;
 	left_empty = right_empty = false;
 
@@ -128,14 +113,17 @@ void analysisLine(int board[GRID_NUM][GRID_NUM], int player,int opponent, int p_
 		{
 			right_empty = true;
 		}
+		//XMMMMX
 		if (right_empty&&left_empty)
 		{
 			count[LFour] += 1;
 		}
+		//PMMMMX
 		else if (right_empty && !left_empty)
 		{
 			count[SFour] += 1;
 		}
+		//XMMMMP
 		else if (!right_empty&&left_empty)
 		{
 			count[LFour] += 1;
@@ -147,9 +135,10 @@ void analysisLine(int board[GRID_NUM][GRID_NUM], int player,int opponent, int p_
 	//ÃßÈý PMMMXX,XXMMMP,PXMMMXP
 	if (range == 3)
 	{
-		//MMMXM
+		
 		if (line[right_index + 1] == Empty)
 		{
+			//MMMXM
 			if (line[right_index + 2] == player)
 			{
 				count[SFour] += 1;
@@ -161,9 +150,10 @@ void analysisLine(int board[GRID_NUM][GRID_NUM], int player,int opponent, int p_
 				count[SThree] += 1;
 			}
 		}
-		//MXMMM
+		
 		if (line[left_index - 1] == Empty)
 		{
+			//MXMMM
 			if (line[left_index - 2] == player)
 			{
 				count[SFour] += 1;
@@ -175,9 +165,10 @@ void analysisLine(int board[GRID_NUM][GRID_NUM], int player,int opponent, int p_
 				count[SThree] += 1;
 			}
 		}
-		//XXMMMX,XMMMXX
+		
 		if (line[left_index - 1] == Empty && line[right_index + 1] == Empty)
 		{
+			//XXMMMX,XMMMXX
 			if (line[left_index - 2] == Empty || line[right_index + 2] == Empty)
 			{
 				count[LThree] += 1;
@@ -190,9 +181,9 @@ void analysisLine(int board[GRID_NUM][GRID_NUM], int player,int opponent, int p_
 		}
 	}
 
-	//³åËÄ ~MMXMM Ö»ÓÃ¼ì²éÒ»¸ö·½Ïò
-	//»îÈý XMXMMX,~XMMXMX
-	//ÃßÈý PMXMMX,XMXMMP,~PMMXMX,~XMMXMP
+	//³åËÄ MMXMM Ö»ÓÃ¼ì²éÒ»¸ö·½Ïò
+	//»îÈý XMXMMX,XMMXMX
+	//ÃßÈý PMXMMX,XMXMMP,PMMXMX,XMMXMP
     //»î¶þ XMMX	ºÍÉÏÃæÊÇÖØ¸´ÆåÐÍ 
 	bool rightTwo = false;
 	bool leftTwo = false;
@@ -309,6 +300,7 @@ void getline(int board[GRID_NUM][GRID_NUM], int player, int opponent, int p_x, i
 	{
 		temp_x = temp_x + dir_set[dir_idx].x;
 		temp_y = temp_y + dir_set[dir_idx].y;
+		//Ô½½çÖ±½Ó×ö¶ÔÊÖÆå×Ó´¦Àí£¬Çé¿öÏàÍ¬
 		if (temp_x < 1 || temp_x>15 || temp_y < 1 || temp_y>15)
 		{
 			line[i] = opponent;
@@ -320,7 +312,7 @@ void getline(int board[GRID_NUM][GRID_NUM], int player, int opponent, int p_x, i
 	}
 }
 
-//±ê¼ÇÏà¶Ô×ø±êleft-right
+//±ê¼ÇÒÑ¾­±»¼ÇÂ¼µÄÆå×Ó£¬·ÀÖ¹ÖØ¸´
 void set_record(int board[GRID_NUM][GRID_NUM],int p_x, int p_y, int left,int right,int dir_idx)
 {
 	int temp_x= p_x + (-5+left)*dir_set[dir_idx].x;
@@ -343,12 +335,12 @@ void set_record(int board[GRID_NUM][GRID_NUM],int p_x, int p_y, int left,int rig
 //°×³åËÄ - 9040
 //ºÚ»îËÄ 9030
 //ºÚ³åËÄ»îÈý 9020
-//ºÚÎÞ³åËÄ°×ÓÐ»îÈý 9010
+//ºÚÎÞ³åËÄ°×ÓÐ»îÈý -9010
 //ºÚÓÐÁ½»îÈý°×ÎÞ»îÈý»òÃßÈý 9000
 //»î¶þ »îÈý ÀÛ¼Ó
 int getScore(int mine_count[],int oppo_count[])
 {
-
+	
 	if (mine_count[Five] > 0)
 	{
 		return TFiveS;
@@ -357,7 +349,7 @@ int getScore(int mine_count[],int oppo_count[])
 	{
 		return NTFiveS;
 	}
-	if (mine_count[SFour] > 0)
+	if (mine_count[SFour] > 1)
 	{
 		mine_count[LFour]++;
 	}
@@ -379,7 +371,7 @@ int getScore(int mine_count[],int oppo_count[])
 	}
 	if (mine_count[SFour] == 0 && oppo_count[LThree] > 0)
 	{
-		return 9010;
+		return -9010;
 	}
 	if (mine_count[LThree] > 1 && oppo_count[LThree] == 0 && oppo_count[SThree] == 0)
 	{
@@ -393,7 +385,7 @@ int getScore(int mine_count[],int oppo_count[])
 	}
 	if (oppo_count[LThree] > 0)
 	{
-		oppo_score += NTLThreeS;
+		oppo_score += oppo_count[LThree]*NTLThreeS;
 	}
 		mine_score += mine_count[LThree] * TLThreeS;
 		mine_score += mine_count[SThree] * TSThreeS;

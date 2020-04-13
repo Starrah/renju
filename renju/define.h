@@ -27,6 +27,7 @@ using namespace std;
 #define inboard(a,b) (a>0 && a<=15 && b>0 && b<=15)		//用于检验招法是否在棋盘上
 #define Empty 0
 
+//棋型记录 活二（XMMX），眠三(PMMMX)，活三(XMMMX)，冲四(PMMMMX)，活四(XMMMMX)，连五(MMMMM)
 #define Two 1
 #define LThree 2
 #define SThree 3
@@ -34,7 +35,21 @@ using namespace std;
 #define SFour 5
 #define Five 6
 
+//关键棋型的权值
+////必杀：
+//自己回合连五 10000
+//非自己回合连五 - 10000
+//自己回合两冲四相当于一活四
+//非自己回合活四 - 9050
+//非自己回合冲四 - 9040
+//自己回合活四 9030
+//自己回合冲四活三 9020
+//自己回合无冲四对手有活三 -9010
+//自己回合有两活三对手无活三或眠三 9000
+//活二 活三 累加
+//TurnFiveScore
 #define TFiveS 10000
+//NotTurnFiveScore
 #define NTFiveS -10000
 #define TFourS 9030
 #define NTLFourS -9050
@@ -50,7 +65,7 @@ using namespace std;
 #define TTwoS 50
 
 
-
+//方向
 struct dir
 {
 	int x;
@@ -58,7 +73,8 @@ struct dir
 	dir(int t_x, int t_y);
 };
 
-static dir dir_set[4] = { {0,1},{1,0},{-1,-1},{1,1} };
+static dir dir_set[4] = { {0,1},{1,0},{-1,1},{1,1} };
+//棋型计数
 static int black_count[8];
 static int white_count[8];
 #define oppositePlayer(a) (a == black? white: black)
