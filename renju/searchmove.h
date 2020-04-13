@@ -2,6 +2,7 @@
 #define _SEARCHMOVE_
 //ËÑË÷ºËÐÄ
 #include "createmoves.h"
+#include"evaluate.h"
 
 struct SearchStepResult {
     double evaScore = 0;

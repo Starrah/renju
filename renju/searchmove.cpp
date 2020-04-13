@@ -40,11 +40,11 @@ inline void printLogWhenDebug(const GameFullStatus &status, const int &depth, co
 #endif
 }
 
-double fakeEvaluate(int board[GRID_NUM][GRID_NUM])//估值算法，返回估值：浮点数，越大表示黑方越好。
-{
-    //TODO 删除它，替换为真正evaluate
-    return rand();
-}
+//double fakeEvaluate(int board[GRID_NUM][GRID_NUM])//估值算法，返回估值：浮点数，越大表示黑方越好。
+//{
+//    //TODO 删除它，替换为真正evaluate
+//    return rand();
+//}
 
 inline void make_centers(vector<Point> &result, const GameFullStatus &status, const int &count) {
     int size = status.playHistory.size();
@@ -57,7 +57,7 @@ inline void make_centers(vector<Point> &result, const GameFullStatus &status, co
 
 SearchStepResult searchStep(GameFullStatus &status, int depth, double alpha, double beta) {
     if (cutoffTest(status, depth, alpha, beta)) {
-        double evaScore = fakeEvaluate(status.board);
+        double evaScore = evaluate(status.board,status.player);
         SearchStepResult evaResult = SearchStepResult{evaScore, Point(0, 0)};
         printLogWhenDebug(status, depth, alpha, beta, evaResult);
         return evaResult;
