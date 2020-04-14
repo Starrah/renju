@@ -62,11 +62,11 @@ SearchStepResult searchStep(GameFullStatus &status, int depth, double alpha, dou
         printLogWhenDebug(status, depth, alpha, beta, evaResult);
         return evaResult;
     }
-    SearchStepResult bestResult = SearchStepResult{status.player == black ? DBL_MIN : DBL_MAX,
-                                                   LegalMove{Point(0, 0), 0}};
     vector<Point> centers;
     make_centers(centers, status, CENTER_USED_COUNT);
     vector<LegalMove> legalMoves = createMoves(status.board, centers);
+    SearchStepResult bestResult = SearchStepResult{status.player == black ? -DBL_MAX : DBL_MAX,
+                                                   LegalMove{Point(0, 0), 0}};
     if (status.player == black) {
         for (const LegalMove &move: legalMoves) {
             if(!status.putChess(move)) continue;
@@ -109,7 +109,7 @@ Point searchMove() //搜索函数主体
     vector<pair<int, Point>> fakeHistory = history; //搜索过程中的推演过程的下棋记录，非真实棋盘的记录。
     GameFullStatus fullStatus{currentPlayer, board, fakeHistory};
 
-    auto finalRes = searchStep(fullStatus, 0, DBL_MIN, DBL_MAX);
+    auto finalRes = searchStep(fullStatus, 0, -DBL_MAX, DBL_MAX);
     return finalRes.move.p;
 }
 
