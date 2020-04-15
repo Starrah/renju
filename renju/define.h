@@ -14,6 +14,7 @@
 #include <ctime>
 #include <vector>
 #include <set>
+#include<fstream>
 
 #include <cassert>
 
@@ -47,17 +48,17 @@ using namespace std;
 #define SFour 5
 #define Five 6
 
-//关键棋型的权值
-////必杀：
-//自己回合连五 10000
-//非自己回合连五 - 10000
-//自己回合两冲四相当于一活四
-//非自己回合活四 - 9050
-//非自己回合冲四 - 9040
-//自己回合活四 9030
-//自己回合冲四活三 9020
-//自己回合无冲四对手有活三 -9010
-//自己回合有两活三对手无活三或眠三 9000
+//假设最后一步为黑棋
+//必杀：
+//黑棋连五 10000
+//白棋连五 - 10000
+//黑棋两冲四相当于一活四
+//白活四 - 9050
+//白冲四 - 9040
+//黑活四 9030
+//黑冲四活三 9020
+//黑无冲四白有活三 -9010
+//黑有两活三白无活三或眠三 9000
 //活二 活三 累加
 //TurnFiveScore
 #define TFiveS 1000000
@@ -94,7 +95,7 @@ static int white_count[8];
 
 #define GRID_NUM 16	//棋盘规模	
 extern int chessBoard[GRID_NUM][GRID_NUM]; //棋盘
-static int record[GRID_NUM][GRID_NUM][4] = { 0 };
+static int record[GRID_NUM][GRID_NUM][4] = { 0 };//启发式函数中标记该棋子是否已经被记录
 int gameover(); //判断是否游戏结束
 extern int _continuousPiecesCount[3];//第i个元素表示玩家i当前在棋盘上最长连珠的长度。
 void updateContinuousPieceCount();

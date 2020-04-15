@@ -18,9 +18,15 @@ bool makeMove(Point p, int player) {
     else return false;
 }
 
-bool unMakeMove() {
-    //撤销落子操作（chessboard[i][j]=0）
-    return true;
+//撤销落子操作：history弹出一项，将棋盘对应点置为0，emptyplaces插入对应点
+void unMakeMove() {
+	if (!history.empty())
+	{
+		Point point = history.back().second;
+		history.pop_back();
+		chessBoard[point.x][point.y] = 0;
+		emptyPlaces.insert(point);
+	 }
 }
 
 Point getMoveFromConsole() {
@@ -31,6 +37,10 @@ Point getMoveFromConsole() {
         string strMove;
         int x, y;
         ss >> strMove >> x >> y;
+		if (strMove == "regret")
+		{
+			return { -1,-1 };
+		}
         if (!(ss.good() || ss.eof()) || strMove != "move") {
             cout << "输入不正确。请输入move x y表示落子点。" << endl;
             continue;
