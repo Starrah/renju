@@ -21,10 +21,10 @@ void reviewChess() {
     } else {
         int review_x, review_y, review_player;
         while (!InFile.eof()) {
+            InFile >> review_player >> review_x >> review_y;
+            chessBoard[review_x][review_y] = review_player;
+            print();
             while (1) {
-                InFile >> review_player >> review_x >> review_y;
-                chessBoard[review_x][review_y] = review_player;
-                print();
                 cout << "输入next查看下一步" << endl;
                 cout << "输入exit退出复盘" << endl;
                 string next;
@@ -33,6 +33,8 @@ void reviewChess() {
                     break;
                 } else if (next == "exit") {
                     return;
+                } else {
+                    cout << "无效命令！" << endl;
                 }
             }
         }

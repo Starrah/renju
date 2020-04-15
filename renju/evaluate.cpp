@@ -1,7 +1,7 @@
 #include "define.h"
 #include "evaluate.h"
 
-int evaluate(int board[GRID_NUM][GRID_NUM], int player)//¹ÀÖµËã·¨£¬·µ»Ø¹ÀÖµ£ºÕûÊı£¬Ô½´ó±íÊ¾ºÚ·½Ô½ºÃ¡£
+int evaluate(const int board[GRID_NUM][GRID_NUM], int player,const vector<pair<int, Point>> playHistory)//¹ÀÖµËã·¨£¬·µ»Ø¹ÀÖµ£ºÕûÊı£¬Ô½´ó±íÊ¾ºÚ·½Ô½ºÃ¡£
 {
 	reset();
 	//±éÀú
@@ -20,18 +20,18 @@ int evaluate(int board[GRID_NUM][GRID_NUM], int player)//¹ÀÖµËã·¨£¬·µ»Ø¹ÀÖµ£ºÕûÊ
 	 int score=0;
 	 if (player == black)
 	 {
-		 score = getScore(black_count, white_count);
+		 score = getScore(board,black_count, white_count, playHistory);
 	 }
 	 else
 	 {
-		 score =- getScore(white_count, black_count);
+		 score =- getScore(board,white_count, black_count, playHistory);
 	 }
 
 	 return score;
 } 
 
 //ÆåÅÌ·¶Î§Îª 1-15
-void evaluatePoint(int board[GRID_NUM][GRID_NUM], int player,int opponent, int p_x,int p_y)
+void evaluatePoint(const int board[GRID_NUM][GRID_NUM], int player,int opponent, int p_x,int p_y)
 {
 	//4¸ö·½ÏòÉÏ²éÕÒÆåĞÍ
 	for (int i = 0; i < 4; i++)
@@ -61,7 +61,7 @@ void reset()
 }
 
 //ĞèÒªÅĞ¶ÏµÄ¹Ø¼üÆåĞÍ£ºÁ¬Îå£¬»îËÄ£¬³åËÄ£¬»îÈı£¬ÃßÈı£¬»î¶ş
-void analysisLine(int board[GRID_NUM][GRID_NUM], int player,int opponent, int p_x, int p_y,int dir_idx)
+void analysisLine(const int board[GRID_NUM][GRID_NUM], int player,int opponent, int p_x, int p_y,int dir_idx)
 {
 	int line[9];
 	int count[8] = {0};
@@ -291,7 +291,7 @@ void analysisLine(int board[GRID_NUM][GRID_NUM], int player,int opponent, int p_
 	}
 }
 
-void getline(int board[GRID_NUM][GRID_NUM], int player, int opponent, int p_x, int p_y, int dir_idx,int line[])
+void getline(const int board[GRID_NUM][GRID_NUM], int player, int opponent, int p_x, int p_y, int dir_idx,int line[])
 {
 	int temp_x = p_x + (-5)*dir_set[dir_idx].x;
 	int temp_y = p_y + (-5)*dir_set[dir_idx].y;
@@ -313,7 +313,7 @@ void getline(int board[GRID_NUM][GRID_NUM], int player, int opponent, int p_x, i
 }
 
 //±ê¼ÇÒÑ¾­±»¼ÇÂ¼µÄÆå×Ó£¬·ÀÖ¹ÖØ¸´
-void set_record(int board[GRID_NUM][GRID_NUM],int p_x, int p_y, int left,int right,int dir_idx)
+void set_record(const int board[GRID_NUM][GRID_NUM],int p_x, int p_y, int left,int right,int dir_idx)
 {
 	int temp_x= p_x + (-5+left)*dir_set[dir_idx].x;
 	int temp_y = p_y + (-5 + left)*dir_set[dir_idx].y;
@@ -338,14 +338,24 @@ void set_record(int board[GRID_NUM][GRID_NUM],int p_x, int p_y, int left,int rig
 //ºÚÎŞ³åËÄ°×ÓĞ»îÈı -9010
 //ºÚÓĞÁ½»îÈı°×ÎŞ»îÈı»òÃßÈı 9000
 //»î¶ş »îÈı ÀÛ¼Ó
-int getScore(int mine_count[],int oppo_count[])
+int getScore(const int board[GRID_NUM][GRID_NUM],int mine_count[],int oppo_count[],const vector<pair<int, Point>> playHistory)
 {
-	
-	if (mine_count[Five] > 0)
+	if (mine_count[Five] > 0 && oppo_count[Five] > 0)
+	{
+		int player = playHistory.back().first;
+		Point point = playHistory.back().second;
+		vector<pair<int, Point>> newHistory = playHistory;
+		newHistory.pop_back();
+		int newBoard[GRID_NUM][GRID_NUM];
+		memcpy(newBoard, board,sizeof(board));
+		newBoard[point.x][point.y] = 0;
+		return evaluate(newBoard, player, playHistory);
+	}
+	if (mine_count[Five] > 0&&oppo_count[Five]==0)
 	{
 		return TFiveS;
 	 }
-	if (oppo_count[Five] > 0)
+	if (oppo_count[Five] > 0&&mine_count[Five]==0)
 	{
 		return NTFiveS;
 	}
