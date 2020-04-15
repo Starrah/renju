@@ -3,7 +3,7 @@
 
 #include "searchmove.h"
 
-#define MAX_DEPTH_FIXED 3
+#define MAX_DEPTH_FIXED 4
 
 inline bool cutoffTest(const GameFullStatus &status, const int &depth, const int &alpha, const int &beta) {
     return depth <= 0;

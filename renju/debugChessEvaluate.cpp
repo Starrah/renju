@@ -99,7 +99,7 @@ void DebugEvaluate(){
         int Board[GRID_NUM][GRID_NUM];
         _convertInput(Board, one);
         int player = one[15*15] - '0';
-        int score = evaluate(Board, player);
+        int score = evaluate(Board, player, vector<pair<int, Point>>());
         cout << "DebugEvaluate: " << score << endl;
     }
 #endif

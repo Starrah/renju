@@ -69,7 +69,7 @@ inline Point erasePoint(vector<LegalMove> &vec, const Point &p) {
 SearchStepResult searchStep(GameFullStatus &status, int depth, int alpha, int beta) {
     searchStepTotalCounter++;
     if (cutoffTest(status, depth, alpha, beta)) {
-        int evaScore = evaluate(status.board, oppositePlayer(status.player),status.playHistory);
+        int evaScore = evaluate(status.board, oppositePlayer(status.player), status.playHistory);
 #if defined(_DEBUG) && defined(RECORD_ALL_SEARCH_STEP)
         vector<tuple<int, LegalMove, int>> qwq;
         qwq.emplace_back(evaScore, LegalMove{Point(0, 0), 0}, status.player);
