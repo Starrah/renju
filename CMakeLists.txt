@@ -20,6 +20,6 @@ add_executable(renju
         renju/searchmove.cpp
         renju/searchmove.h
         renju/start.cpp
-        renju/cutoffTest.h renju/stopSearchSiblingsTest.h)
+        renju/cutoffTest.h renju/stopSearchSiblingsTest.h renju/debugChessEvaluate.cpp renju/debugChessEvaluate.h)
 
 target_link_libraries(renju)
