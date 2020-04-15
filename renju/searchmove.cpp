@@ -28,6 +28,8 @@ bool GameFullStatus::unputChess(const LegalMove &move) {
     return true;
 }
 
+int searchStepTotalCounter = 0;
+
 inline void printLogWhenDebug(const GameFullStatus &status, const int &depth, const double &alpha, const double &beta,
                               const SearchStepResult &result) {
 #if defined(_DEBUG) && defined(PRINT_STEP_LOG)
@@ -51,6 +53,7 @@ inline void make_centers(vector<Point> &result, const GameFullStatus &status, co
 #define CENTER_USED_COUNT 2
 
 SearchStepResult searchStep(GameFullStatus &status, int depth, double alpha, double beta) {
+    searchStepTotalCounter++;
     if (cutoffTest(status, depth, alpha, beta)) {
         double evaScore = evaluate(status.board, oppositePlayer(status.player));
 #if defined(_DEBUG) && defined(RECORD_ALL_SEARCH_STEP)
@@ -122,6 +125,7 @@ Point searchMove() //搜索函数主体
     vector<pair<int, Point>> fakeHistory = history; //搜索过程中的推演过程的下棋记录，非真实棋盘的记录。
     GameFullStatus fullStatus{currentPlayer, board, fakeHistory};
 
+    searchStepTotalCounter = 0;
     auto finalRes = searchStep(fullStatus, 0, -DBL_MAX, DBL_MAX);
     return finalRes.move.p;
 }
