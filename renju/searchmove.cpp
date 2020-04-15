@@ -55,7 +55,7 @@ inline void make_centers(vector<Point> &result, const GameFullStatus &status, co
 SearchStepResult searchStep(GameFullStatus &status, int depth, int alpha, int beta) {
     searchStepTotalCounter++;
     if (cutoffTest(status, depth, alpha, beta)) {
-        int evaScore = evaluate(status.board, oppositePlayer(status.player));
+        int evaScore = evaluate(status.board, oppositePlayer(status.player),status.playHistory);
 #if defined(_DEBUG) && defined(RECORD_ALL_SEARCH_STEP)
         vector<tuple<int, LegalMove, int>> qwq;
         qwq.emplace_back(evaScore, LegalMove{Point(0, 0), 0}, status.player);
@@ -127,7 +127,7 @@ Point searchMove() //ËÑË÷º¯ÊýÖ÷Ìå
 
     searchStepTotalCounter = 0;
     int searchDepth = MAX_DEPTH_FIXED;
-    if (evaluate(board, oppositePlayer(currentPlayer)) >= MUST_WIN_VALUE) searchDepth = 1;
+    if (evaluate(board, oppositePlayer(currentPlayer),fullStatus.playHistory) >= MUST_WIN_VALUE) searchDepth = 1;
     auto finalRes = searchStep(fullStatus, searchDepth, INT_MIN, INT_MAX);
     return finalRes.move.p;
 }
