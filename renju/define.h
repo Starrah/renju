@@ -108,6 +108,9 @@ struct Point{
     inline bool operator<(const Point& other) const {
         return x != other.x? x < other.x: y < other.y;
     }
+    inline bool operator==(const Point& other) const {
+        return x == other.x && y == other.y;
+    }
 };
 
 extern int currentPlayer;//1表示黑棋（电脑），2表示白棋（玩家）

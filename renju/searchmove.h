@@ -20,6 +20,7 @@ public:
     int player;
     int (*board)[GRID_NUM];
     vector<pair<int, Point>> playHistory;
+    unsigned long long zobrist;
 
     inline bool putChess(const LegalMove &move);
 
