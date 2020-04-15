@@ -19,6 +19,14 @@
 
 using namespace std;
 
+#if defined(_DEBUG) || !defined(NDEBUG)
+#define _DEBUG
+#undef NDEBUG
+#else
+#undef _DEBUG
+#define NDEBUG
+#endif
+
 #define blank 0		//¿Õ°×µã
 #define black 1		//ºÚ·½
 #define white 2		//°×·½

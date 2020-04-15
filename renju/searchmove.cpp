@@ -8,6 +8,7 @@
 
 //#define PRINT_STEP_LOG
 
+
 bool GameFullStatus::putChess(const LegalMove &move) {
     if (board[move.p.x][move.p.y] != blank) return false;
     board[move.p.x][move.p.y] = player;
@@ -29,7 +30,7 @@ bool GameFullStatus::unputChess(const LegalMove &move) {
 
 inline void printLogWhenDebug(const GameFullStatus &status, const int &depth, const double &alpha, const double &beta,
                               const SearchStepResult &result) {
-#if !defined(NDEBUG) && defined(PRINT_STEP_LOG)
+#if defined(_DEBUG) && defined(PRINT_STEP_LOG)
     cout << depth << "\t" << (status.player == black ? "black" : "white") << "\t";
     if (result.move.p.x == 0) {
         cout << "Evaluat" << "\t";
@@ -39,12 +40,6 @@ inline void printLogWhenDebug(const GameFullStatus &status, const int &depth, co
     cout << result.evaScore << "\t" << alpha << "," << beta << "\t" << endl;
 #endif
 }
-
-//double fakeEvaluate(int board[GRID_NUM][GRID_NUM])//估值算法，返回估值：浮点数，越大表示黑方越好。
-//{
-//    //TODO 删除它，替换为真正evaluate
-//    return rand();
-//}
 
 inline void make_centers(vector<Point> &result, const GameFullStatus &status, const int &count) {
     int size = status.playHistory.size();
@@ -58,7 +53,13 @@ inline void make_centers(vector<Point> &result, const GameFullStatus &status, co
 SearchStepResult searchStep(GameFullStatus &status, int depth, double alpha, double beta) {
     if (cutoffTest(status, depth, alpha, beta)) {
         double evaScore = evaluate(status.board,status.player);
-        SearchStepResult evaResult = SearchStepResult{evaScore, Point(0, 0)};
+#if defined(_DEBUG) && defined(RECORD_ALL_SEARCH_STEP)
+        vector<tuple<double, LegalMove, int>> qwq;
+        qwq.emplace_back(evaScore, LegalMove{Point(0, 0), 0}, status.player);
+        SearchStepResult evaResult = SearchStepResult{evaScore, Point(0, 0), 0, qwq};
+#else
+        SearchStepResult evaResult = SearchStepResult{evaScore, Point(0, 0), 0};
+#endif
         printLogWhenDebug(status, depth, alpha, beta, evaResult);
         return evaResult;
     }
@@ -71,7 +72,13 @@ SearchStepResult searchStep(GameFullStatus &status, int depth, double alpha, dou
         for (const LegalMove &move: legalMoves) {
             if(!status.putChess(move)) continue;
             auto res = searchStep(status, depth + 1, alpha, beta);
+#if defined(_DEBUG) && defined(RECORD_ALL_SEARCH_STEP)
+            vector<tuple<double, LegalMove, int>> qwq = res.hh;
+            qwq.emplace_back(res.evaScore, move, oppositePlayer(status.player));
+            SearchStepResult curResult = {res.evaScore, move, qwq};
+#else
             SearchStepResult curResult = {res.evaScore, move};
+#endif
             if (curResult.evaScore > bestResult.evaScore) {
                 bestResult = curResult;
                 alpha = max(alpha, bestResult.evaScore);
@@ -86,7 +93,13 @@ SearchStepResult searchStep(GameFullStatus &status, int depth, double alpha, dou
         for (const LegalMove &move: legalMoves) {
             if(!status.putChess(move)) continue;
             auto res = searchStep(status, depth + 1, alpha, beta);
+#if defined(_DEBUG) && defined(RECORD_ALL_SEARCH_STEP)
+            vector<tuple<double, LegalMove, int>> qwq = res.hh;
+            qwq.emplace_back(res.evaScore, move, oppositePlayer(status.player));
+            SearchStepResult curResult = {res.evaScore, move, qwq};
+#else
             SearchStepResult curResult = {res.evaScore, move};
+#endif
             if (curResult.evaScore < bestResult.evaScore) {
                 bestResult = curResult;
                 beta = min(beta, bestResult.evaScore);

@@ -3,10 +3,16 @@
 //ËÑË÷ºËÐÄ
 #include "createmoves.h"
 #include"evaluate.h"
+#include <tuple>
+
+#define RECORD_ALL_SEARCH_STEP
 
 struct SearchStepResult {
     double evaScore = 0;
     LegalMove move;
+#if defined(_DEBUG) && defined(RECORD_ALL_SEARCH_STEP)
+    vector<tuple<double, LegalMove, int>> hh;
+#endif
 };
 
 class GameFullStatus {
