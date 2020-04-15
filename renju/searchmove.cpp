@@ -74,7 +74,7 @@ SearchStepResult searchStep(GameFullStatus &status, int depth, int alpha, int be
     if (status.player == black) {
         for (const LegalMove &move: legalMoves) {
             if(!status.putChess(move)) continue;
-            auto res = searchStep(status, depth + 1, alpha, beta);
+            auto res = searchStep(status, depth - 1, alpha, beta);
 #if defined(_DEBUG) && defined(RECORD_ALL_SEARCH_STEP)
             vector<tuple<int, LegalMove, int>> qwq = res.hh;
             qwq.emplace_back(res.evaScore, move, oppositePlayer(status.player));
