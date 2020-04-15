@@ -3,8 +3,14 @@
 #include <cmath>
 #define BOARD_CENTER Point(8, 8)
 
-inline int L1Distance(const Point& p, const Point& center){
-    return abs(p.x - center.x) + abs(p.y - center.y);
+/**
+ * 距离计算方式：规定每步可以横或竖或斜走，那么从p到center需要走几步。
+ * @param p
+ * @param center
+ * @return
+ */
+inline int ToCenterDistance(const Point& p, const Point& center){
+    return max(abs(p.x - center.x), abs(p.y - center.y));
 }
 
 /**
@@ -17,12 +23,13 @@ inline int L1Distance(const Point& p, const Point& center){
  */
 vector<LegalMove> createMoves(int curBoard[GRID_NUM][GRID_NUM], vector<Point>& centers) //生成全部合法走法集
 {
+    if (centers.empty()) centers.push_back(BOARD_CENTER);
     vector<LegalMove> result;
     for (const Point& emptyPlace: emptyPlaces) {
         if (curBoard[emptyPlace.x][emptyPlace.y] == blank) {
             int minVal = INT_MAX;
             for (const Point& center: centers) {
-                minVal = min(minVal, L1Distance(emptyPlace, center));
+                minVal = min(minVal, ToCenterDistance(emptyPlace, center));
             }
             result.push_back(LegalMove{emptyPlace, minVal});
         }

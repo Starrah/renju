@@ -20,11 +20,15 @@
 using namespace std;
 
 #if defined(_DEBUG) || !defined(NDEBUG)
+#ifndef _DEBUG
 #define _DEBUG
+#endif
 #undef NDEBUG
 #else
 #undef _DEBUG
+#ifndef NDEBUG
 #define NDEBUG
+#endif
 #endif
 
 #define blank 0		//¿Õ°×µã
