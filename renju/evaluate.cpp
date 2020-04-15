@@ -126,7 +126,7 @@ void analysisLine(int board[GRID_NUM][GRID_NUM], int player,int opponent, int p_
 		//XMMMMP
 		else if (!right_empty&&left_empty)
 		{
-			count[LFour] += 1;
+			count[SFour] += 1;
 		}
 	}
 

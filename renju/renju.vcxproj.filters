@@ -39,6 +39,9 @@
     <ClCompile Include="makemove.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="debugChessEvaluate.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="define.h">
@@ -59,5 +62,17 @@
     <ClInclude Include="makemove.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="cutoffTest.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="debugChessEvaluate.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="stopSearchSiblingsTest.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\CMakeLists.txt" />
   </ItemGroup>
 </Project>
