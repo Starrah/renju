@@ -60,9 +60,9 @@ using namespace std;
 //自己回合有两活三对手无活三或眠三 9000
 //活二 活三 累加
 //TurnFiveScore
-#define TFiveS 1000000000
+#define TFiveS 1000000
 //NotTurnFiveScore
-#define NTFiveS -1000000000
+#define NTFiveS -1000000
 #define TFourS 9030
 #define NTLFourS -9050
 #define NTSFourS -9040

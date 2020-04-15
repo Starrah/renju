@@ -8,10 +8,10 @@
 #define RECORD_ALL_SEARCH_STEP
 
 struct SearchStepResult {
-    double evaScore = 0;
+    int evaScore = 0;
     LegalMove move;
 #if defined(_DEBUG) && defined(RECORD_ALL_SEARCH_STEP)
-    vector<tuple<double, LegalMove, int>> hh;
+    vector<tuple<int, LegalMove, int>> hh;
 #endif
 };
 

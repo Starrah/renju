@@ -4,8 +4,8 @@
 #include "searchmove.h"
 
 inline bool stopSearchSiblingsTest(const SearchStepResult &curResult, const SearchStepResult &bestResult,
-                                   const GameFullStatus &status, const int &depth, const double &alpha,
-                                   const double &beta) {
+                                   const GameFullStatus &status, const int &depth, const int &alpha,
+                                   const int &beta) {
     return status.player == black ? (bestResult.evaScore >= beta) : (bestResult.evaScore <= alpha);
 }
 

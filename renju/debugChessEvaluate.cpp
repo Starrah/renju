@@ -96,10 +96,10 @@ void _convertInput(int result[GRID_NUM][GRID_NUM] , const string& str){
 void DebugEvaluate(){
 #if defined(_DEBUG) && defined (DEBUG_EVALUATE_ENABLE)
     for (const string& one: input) {
-        int chessBoard[GRID_NUM][GRID_NUM];
-        _convertInput(chessBoard, one);
+        int Board[GRID_NUM][GRID_NUM];
+        _convertInput(Board, one);
         int player = one[15*15] - '0';
-        double score = evaluate(chessBoard, player);
+        int score = evaluate(Board, player);
         cout << "DebugEvaluate: " << score << endl;
     }
 #endif

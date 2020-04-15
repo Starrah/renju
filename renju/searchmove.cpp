@@ -30,7 +30,7 @@ bool GameFullStatus::unputChess(const LegalMove &move) {
 
 int searchStepTotalCounter = 0;
 
-inline void printLogWhenDebug(const GameFullStatus &status, const int &depth, const double &alpha, const double &beta,
+inline void printLogWhenDebug(const GameFullStatus &status, const int &depth, const int &alpha, const int &beta,
                               const SearchStepResult &result) {
 #if defined(_DEBUG) && defined(PRINT_STEP_LOG)
     cout << depth << "\t" << (status.player == black ? "black" : "white") << "\t";
@@ -52,12 +52,12 @@ inline void make_centers(vector<Point> &result, const GameFullStatus &status, co
 
 #define CENTER_USED_COUNT 2
 
-SearchStepResult searchStep(GameFullStatus &status, int depth, double alpha, double beta) {
+SearchStepResult searchStep(GameFullStatus &status, int depth, int alpha, int beta) {
     searchStepTotalCounter++;
     if (cutoffTest(status, depth, alpha, beta)) {
-        double evaScore = evaluate(status.board, oppositePlayer(status.player));
+        int evaScore = evaluate(status.board, oppositePlayer(status.player));
 #if defined(_DEBUG) && defined(RECORD_ALL_SEARCH_STEP)
-        vector<tuple<double, LegalMove, int>> qwq;
+        vector<tuple<int, LegalMove, int>> qwq;
         qwq.emplace_back(evaScore, LegalMove{Point(0, 0), 0}, status.player);
         SearchStepResult evaResult = SearchStepResult{evaScore, Point(0, 0), 0, qwq};
 #else
@@ -69,14 +69,14 @@ SearchStepResult searchStep(GameFullStatus &status, int depth, double alpha, dou
     vector<Point> centers;
     make_centers(centers, status, CENTER_USED_COUNT);
     vector<LegalMove> legalMoves = createMoves(status.board, centers);
-    SearchStepResult bestResult = SearchStepResult{status.player == black ? -DBL_MAX : DBL_MAX,
+    SearchStepResult bestResult = SearchStepResult{status.player == black ? INT_MIN : INT_MAX,
                                                    LegalMove{Point(0, 0), 0}};
     if (status.player == black) {
         for (const LegalMove &move: legalMoves) {
             if(!status.putChess(move)) continue;
             auto res = searchStep(status, depth + 1, alpha, beta);
 #if defined(_DEBUG) && defined(RECORD_ALL_SEARCH_STEP)
-            vector<tuple<double, LegalMove, int>> qwq = res.hh;
+            vector<tuple<int, LegalMove, int>> qwq = res.hh;
             qwq.emplace_back(res.evaScore, move, oppositePlayer(status.player));
             SearchStepResult curResult = {res.evaScore, move, qwq};
 #else
@@ -97,7 +97,7 @@ SearchStepResult searchStep(GameFullStatus &status, int depth, double alpha, dou
             if(!status.putChess(move)) continue;
             auto res = searchStep(status, depth + 1, alpha, beta);
 #if defined(_DEBUG) && defined(RECORD_ALL_SEARCH_STEP)
-            vector<tuple<double, LegalMove, int>> qwq = res.hh;
+            vector<tuple<int, LegalMove, int>> qwq = res.hh;
             qwq.emplace_back(res.evaScore, move, oppositePlayer(status.player));
             SearchStepResult curResult = {res.evaScore, move, qwq};
 #else
@@ -126,7 +126,7 @@ Point searchMove() //ËÑË÷º¯ÊýÖ÷Ìå
     GameFullStatus fullStatus{currentPlayer, board, fakeHistory};
 
     searchStepTotalCounter = 0;
-    auto finalRes = searchStep(fullStatus, 0, -DBL_MAX, DBL_MAX);
+    auto finalRes = searchStep(fullStatus, 0, INT_MIN, INT_MAX);
     return finalRes.move.p;
 }
 
