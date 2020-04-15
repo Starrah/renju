@@ -99,6 +99,7 @@ static int record[GRID_NUM][GRID_NUM][4] = { 0 };//Æô·¢Ê½º¯ÊıÖĞ±ê¼Ç¸ÃÆå×ÓÊÇ·ñÒÑ¾
 int gameover(); //ÅĞ¶ÏÊÇ·ñÓÎÏ·½áÊø
 extern int _continuousPiecesCount[3];//µÚi¸öÔªËØ±íÊ¾Íæ¼Òiµ±Ç°ÔÚÆåÅÌÉÏ×î³¤Á¬ÖéµÄ³¤¶È¡£
 void updateContinuousPieceCount();
+#define BOARD_CENTER Point(8, 8)
 
 struct Point{
     int x;
