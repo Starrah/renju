@@ -52,7 +52,7 @@ inline void make_centers(vector<Point> &result, const GameFullStatus &status, co
 
 SearchStepResult searchStep(GameFullStatus &status, int depth, double alpha, double beta) {
     if (cutoffTest(status, depth, alpha, beta)) {
-        double evaScore = evaluate(status.board,status.player);
+        double evaScore = evaluate(status.board, oppositePlayer(status.player));
 #if defined(_DEBUG) && defined(RECORD_ALL_SEARCH_STEP)
         vector<tuple<double, LegalMove, int>> qwq;
         qwq.emplace_back(evaScore, LegalMove{Point(0, 0), 0}, status.player);
