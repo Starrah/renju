@@ -76,6 +76,7 @@ using namespace std;
 #define NTTwoS 80
 #define TTwoS 40
 
+#define MUST_WIN_VALUE 8500 //search的时候用做判断，凡是返回值大于等于该值的情况均作为已有必胜策略来处理，只搜索一步。
 
 //方向
 struct dir

@@ -95,7 +95,7 @@ SearchStepResult searchStep(GameFullStatus &status, int depth, int alpha, int be
     } else if (status.player == white) {
         for (const LegalMove &move: legalMoves) {
             if(!status.putChess(move)) continue;
-            auto res = searchStep(status, depth + 1, alpha, beta);
+            auto res = searchStep(status, depth - 1, alpha, beta);
 #if defined(_DEBUG) && defined(RECORD_ALL_SEARCH_STEP)
             vector<tuple<int, LegalMove, int>> qwq = res.hh;
             qwq.emplace_back(res.evaScore, move, oppositePlayer(status.player));
@@ -126,7 +126,9 @@ Point searchMove() //ËÑË÷º¯ÊýÖ÷Ìå
     GameFullStatus fullStatus{currentPlayer, board, fakeHistory};
 
     searchStepTotalCounter = 0;
-    auto finalRes = searchStep(fullStatus, 0, INT_MIN, INT_MAX);
+    int searchDepth = MAX_DEPTH_FIXED;
+    if (evaluate(board, oppositePlayer(currentPlayer)) >= MUST_WIN_VALUE) searchDepth = 1;
+    auto finalRes = searchStep(fullStatus, searchDepth, INT_MIN, INT_MAX);
     return finalRes.move.p;
 }
 

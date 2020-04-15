@@ -6,6 +6,6 @@
 #define MAX_DEPTH_FIXED 3
 
 inline bool cutoffTest(const GameFullStatus &status, const int &depth, const int &alpha, const int &beta) {
-    return depth >= MAX_DEPTH_FIXED;
+    return depth <= 0;
 }
 #endif //RENJU_CUTOFFTEST_H
