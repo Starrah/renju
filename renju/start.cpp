@@ -44,6 +44,19 @@ void reviewChess() {
 int main() {
     DebugEvaluate();
 
+<<<<<<< HEAD
+	//复盘
+	string save;
+	cout << "是否要复盘？输入 Y 或 N" << endl;
+	cin >> save;
+	if (save == "Y")
+	{
+		reviewChess();
+	}
+
+	cin.ignore();
+=======
+>>>>>>> ccc12fc001d04e68d2f905d14320f660915b04d2
     cout << "*************五子棋人机对弈AI*************" << endl;
     cout << "输入: replay  播放复盘" << endl;
     cout << "输入: newblack  电脑先手" << endl;

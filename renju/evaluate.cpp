@@ -252,7 +252,7 @@ void analysisLine(const int board[GRID_NUM][GRID_NUM], int player,int opponent, 
 		else if (line[left_index - 1] == Empty && line[left_index - 2] == player && line[left_index - 3] == Empty)
 		{
 			record[p_x + (left_index - 2 - 4)*dir_set[dir_idx].x][p_y + (left_index - 2 - 4)*dir_set[dir_idx].y][dir_idx] = 1;
-			count[LThree]++;
+			count[SThree]++;
 		}
 
 	}
