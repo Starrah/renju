@@ -1,7 +1,6 @@
 #include "define.h"
 #include "evaluate.h"
 #include "searchmove.h"
-#include <cfloat>
 //两个内联函数体
 #include "stopSearchSiblingsTest.h"
 #include "cutoffTest.h"
