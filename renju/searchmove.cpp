@@ -64,7 +64,7 @@ inline Point erasePoint(vector<LegalMove> &vec, const Point &p) {
             return res;
         }
     }
-    return {};
+    return {0, 0};
 }
 
 SearchStepResult searchStep(GameFullStatus &status, int depth, int alpha, int beta) {
@@ -167,7 +167,8 @@ Point searchMove() //搜索函数主体
     searchStepTotalCounter = 0;
     SearchStepResult finalRes = SearchStepResult{fullStatus.player == black ? INT_MIN : INT_MAX,
                                                  LegalMove{Point(0, 0), 0}};
-    if (evaluate(board, oppositePlayer(currentPlayer), fullStatus.playHistory) >= MUST_WIN_VALUE) {
+    int currentEva = evaluate(board, oppositePlayer(currentPlayer), fullStatus.playHistory);
+    if (currentEva >= MUST_WIN_VALUE) {
         root_depth = 1;
         // 对于黑方可以必杀结束游戏的情况，就只进行一层搜索以便可以直接结束游戏、不会拖延。
         finalRes = searchStep(fullStatus, 1, INT_MIN, INT_MAX);
@@ -193,8 +194,9 @@ Point searchMove() //搜索函数主体
     }
 #if defined(_DEBUG) || defined (FORCE_PRINT_AI_DEBUG_OUTPUT)
     stringstream optss;
-    optss << "搜索最大层数" << root_depth << ", " << "总时间" << nowToStartMsec() << "ms, "
-         << "总步数" << searchStepTotalCounter << ", " << "评估分数" << finalRes.evaScore << ", " << endl;
+    optss << "当前估值" << currentEva << ", " << "搜索最大层数" << root_depth << ", "
+          << "总时间" << nowToStartMsec() << "ms, " << "总步数" << searchStepTotalCounter << ", "
+          << "评估分数" << finalRes.evaScore << ", " << endl;
     DebugAIOutputString = optss.str();
 #endif
     return finalRes.move.p;

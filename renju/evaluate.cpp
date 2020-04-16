@@ -24,7 +24,7 @@ int evaluate(const int board[GRID_NUM][GRID_NUM], int player,const vector<pair<i
 	 }
 	 else
 	 {
-		 score =- getScore(board,white_count, black_count, playHistory);
+		 score = (-getScore(board,white_count, black_count, playHistory));
 	 }
 
 	 return score;
