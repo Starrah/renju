@@ -59,7 +59,7 @@ int main() {
 
 	//复盘
 	string save;
-	cout << "是否要复盘？输入 Y \ N" << endl;
+	cout << "是否要复盘？输入 Y 或 N" << endl;
 	cin >> save;
 	if (save == "Y")
 	{
