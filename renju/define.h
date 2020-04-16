@@ -120,4 +120,6 @@ extern vector<pair<int, Point>> history;//列表表示下棋历史记录，每个元素是pair，
 extern set<Point> emptyPlaces;
 
 void initializeGame();
+
+extern string DebugAIOutputString;
 #endif

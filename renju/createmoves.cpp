@@ -22,7 +22,7 @@ inline int ToCenterDistance(const Point& p, const Point& center){
  */
 vector<LegalMove> createMoves(int curBoard[GRID_NUM][GRID_NUM], vector<Point>& centers) //生成全部合法走法集
 {
-    if (emptyPlaces.size() == (GRID_NUM - 1) * (GRID_NUM - 1)) return vector<LegalMove>{LegalMove{BOARD_CENTER}};
+    if (curBoard[GRID_NUM / 2][GRID_NUM / 2] == blank) return vector<LegalMove>{LegalMove{BOARD_CENTER}};
     if (centers.empty()) centers.push_back(BOARD_CENTER);
     vector<LegalMove> result;
     for (const Point& emptyPlace: emptyPlaces) {

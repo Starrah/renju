@@ -105,6 +105,7 @@ int main() {
         print();
         cout << (nowPlayer == black ? "电脑" : "玩家") << "刚刚下了位置("
              << playPoint.x << ", " << playPoint.y << ")" << endl;
+        if (nowPlayer == black && !DebugAIOutputString.empty()) cout << DebugAIOutputString;
         gameOverValue = gameover();
     } while (gameOverValue == 0);
 

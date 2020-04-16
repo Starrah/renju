@@ -6,6 +6,7 @@
 #include "stopSearchSiblingsTest.h"
 #include "cutoffTest.h"
 #include "hashsearch.h"
+#include <sstream>
 
 //#define PRINT_STEP_LOG
 
@@ -70,7 +71,7 @@ SearchStepResult searchStep(GameFullStatus &status, int depth, int alpha, int be
     searchStepTotalCounter++;
     if (cutoffTest(status, depth, alpha, beta)) {
         int evaScore = evaluate(status.board, oppositePlayer(status.player), status.playHistory);
-#if defined(_DEBUG) && defined(RECORD_ALL_SEARCH_STEP)
+#if defined(_DEBUG) && defined(DEBUG_RECORD_ALL_SEARCH_STEP)
         vector<tuple<int, LegalMove, int>> qwq;
         qwq.emplace_back(evaScore, LegalMove{Point(0, 0), 0}, status.player);
         SearchStepResult evaResult = SearchStepResult{evaScore, Point(0, 0), 0, qwq};
@@ -104,7 +105,7 @@ SearchStepResult searchStep(GameFullStatus &status, int depth, int alpha, int be
         for (const LegalMove &move: legalMoves) {
             if (!status.putChess(move)) continue;
             auto res = searchStep(status, depth - 1, alpha, beta);
-#if defined(_DEBUG) && defined(RECORD_ALL_SEARCH_STEP)
+#if defined(_DEBUG) && defined(DEBUG_RECORD_ALL_SEARCH_STEP)
             vector<tuple<int, LegalMove, int>> qwq = res.hh;
             qwq.emplace_back(res.evaScore, move, oppositePlayer(status.player));
             SearchStepResult curResult = {res.evaScore, move, qwq};
@@ -126,7 +127,7 @@ SearchStepResult searchStep(GameFullStatus &status, int depth, int alpha, int be
         for (const LegalMove &move: legalMoves) {
             if (!status.putChess(move)) continue;
             auto res = searchStep(status, depth - 1, alpha, beta);
-#if defined(_DEBUG) && defined(RECORD_ALL_SEARCH_STEP)
+#if defined(_DEBUG) && defined(DEBUG_RECORD_ALL_SEARCH_STEP)
             vector<tuple<int, LegalMove, int>> qwq = res.hh;
             qwq.emplace_back(res.evaScore, move, oppositePlayer(status.player));
             SearchStepResult curResult = {res.evaScore, move, qwq};
@@ -150,6 +151,11 @@ SearchStepResult searchStep(GameFullStatus &status, int depth, int alpha, int be
     return bestResult;
 }
 
+int root_depth;
+clock_t startClock;
+
+#define FORCE_PRINT_AI_DEBUG_OUTPUT
+
 Point searchMove() //搜索函数主体
 {
     int board[GRID_NUM][GRID_NUM];
@@ -159,9 +165,38 @@ Point searchMove() //搜索函数主体
     GameFullStatus fullStatus{currentPlayer, board, fakeHistory, zobrist};
 
     searchStepTotalCounter = 0;
-    int searchDepth = MAX_DEPTH_FIXED;
-    if (evaluate(board, oppositePlayer(currentPlayer),fullStatus.playHistory) >= MUST_WIN_VALUE) searchDepth = 1;
-    auto finalRes = searchStep(fullStatus, searchDepth, INT_MIN, INT_MAX);
+    SearchStepResult finalRes = SearchStepResult{fullStatus.player == black ? INT_MIN : INT_MAX,
+                                                 LegalMove{Point(0, 0), 0}};
+    if (evaluate(board, oppositePlayer(currentPlayer), fullStatus.playHistory) >= MUST_WIN_VALUE) {
+        root_depth = 1;
+        // 对于黑方可以必杀结束游戏的情况，就只进行一层搜索以便可以直接结束游戏、不会拖延。
+        finalRes = searchStep(fullStatus, 1, INT_MIN, INT_MAX);
+    } else {
+        setStartClock();//开始计时
+        for (root_depth = ROOT_DEPTH_START; root_depth <= MAX_ROOT_DEPTH; root_depth++) {
+            auto result = searchStep(fullStatus, root_depth, INT_MIN, INT_MAX);
+            assert(fullStatus.player == currentPlayer &&
+                   memcmp(fullStatus.board, board, sizeof(int) * GRID_NUM * GRID_NUM) == 0 &&
+                   fullStatus.playHistory == fakeHistory && fullStatus.zobrist == zobrist);
+            if (root_depth >= STOP_MIN_ROOT_DEPTH - 1 && nowToStartMsec() > TIME_GIVEN_MSEC) {
+                // 如果运行到这里，说明迭代深度搜索由于超时而被停止，那么这一搜索就有很大的概率是一个不完整的结果。
+                // 在这种情况下，直接选用这个不完整的结果是不合理的，更合理的做法应当是利用这个被中断的部分搜索结果
+                // 与之前产生的结果取其中较好的一个。
+                if (root_depth < STOP_MIN_ROOT_DEPTH ||
+                    ((fullStatus.player == black && result.evaScore > finalRes.evaScore) ||
+                     (fullStatus.player == white && result.evaScore < finalRes.evaScore))) {
+                    finalRes = result;
+                }
+                break;
+            } else finalRes = result;//除超时外，则结果必定是被完整搜索的，就直接抛弃旧的结果采信新的结果
+        }
+    }
+#if defined(_DEBUG) || defined (FORCE_PRINT_AI_DEBUG_OUTPUT)
+    stringstream optss;
+    optss << "搜索最大层数" << root_depth << ", " << "总时间" << nowToStartMsec() << "ms, "
+         << "总步数" << searchStepTotalCounter << ", " << "评估分数" << finalRes.evaScore << ", " << endl;
+    DebugAIOutputString = optss.str();
+#endif
     return finalRes.move.p;
 }
 
