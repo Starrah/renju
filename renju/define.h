@@ -14,9 +14,10 @@
 #include <ctime>
 #include <vector>
 #include <set>
-#include<fstream>
+#include <fstream>
 
 #include <cassert>
+#include <deque>
 
 using namespace std;
 
@@ -93,9 +94,11 @@ static int black_count[8];
 static int white_count[8];
 #define oppositePlayer(a) (a == black? white: black)
 
-#define GRID_NUM 16	//棋盘规模	
+#define GRID_NUM 16	//棋盘规模
+#define CEILING_LOG_GRID_NUM 4
 extern int chessBoard[GRID_NUM][GRID_NUM]; //棋盘
 static int record[GRID_NUM][GRID_NUM][4] = { 0 };//启发式函数中标记该棋子是否已经被记录
+extern int _spreadDirections[8][2];
 int gameover(); //判断是否游戏结束
 extern int _continuousPiecesCount[3];//第i个元素表示玩家i当前在棋盘上最长连珠的长度。
 void updateContinuousPieceCount();
@@ -122,4 +125,35 @@ extern set<Point> emptyPlaces;
 void initializeGame();
 
 extern string DebugAIOutputString;
+
+
+inline void updateDistanceMatrixWithNewChess(int distanceMatrix[GRID_NUM][GRID_NUM], const Point& p) {
+    if (distanceMatrix[p.x][p.y] <= 0) return;
+    deque<pair<Point, int>> queue;
+    queue.emplace_back(p, 0);
+    while (!queue.empty()) {
+        auto here = queue.back();
+        queue.pop_back();
+        distanceMatrix[here.first.x][here.first.y] = here.second;
+        for (auto & direction: _spreadDirections) {
+            int newX = here.first.x + direction[0];
+            int newY = here.first.y + direction[1];
+            if (inboard(newX, newY) && distanceMatrix[newX][newY] > here.second + 1) {
+                queue.emplace_back(Point(newX, newY), here.second + 1);
+            }
+        }
+    }
+}
+
+inline void setupDistanceMatrix(int distanceMatrix[GRID_NUM][GRID_NUM]) {
+    fill_n((int*)distanceMatrix, GRID_NUM * GRID_NUM, GRID_NUM);
+    for (int i=1;i<GRID_NUM;i++) {
+        for (int j=1;j<GRID_NUM;j++) {
+            if (chessBoard[i][j] != blank) {
+                updateDistanceMatrixWithNewChess(distanceMatrix, Point(i, j));
+            }
+        }
+    }
+}
+
 #endif

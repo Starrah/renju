@@ -2,17 +2,18 @@
 #define _CREATEMOVES_
 
 #include <set>
-struct LegalMove{
+
+struct LegalMove {
     Point p;
     int priority = 0;//优先级，越低则越应当被首先搜索
-    inline bool operator<(const LegalMove& other) const
-    {
+    inline bool operator<(const LegalMove &other) const {
         return priority < other.priority;
     }
 };
 
 //走法生成器
 
-vector<LegalMove> createMoves(int curBoard[GRID_NUM][GRID_NUM], vector<Point>& centers);
+vector<LegalMove> createMoves(int curBoard[GRID_NUM][GRID_NUM], vector<Point> &centers,
+                              const int originDistanceMatrix[GRID_NUM][GRID_NUM]);
 
 #endif

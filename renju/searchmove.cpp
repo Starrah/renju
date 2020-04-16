@@ -10,6 +10,7 @@
 
 //#define PRINT_STEP_LOG
 
+int distanceMatrixWhenAISearchBegin[GRID_NUM][GRID_NUM];
 
 bool GameFullStatus::putChess(const LegalMove &move) {
     if (board[move.p.x][move.p.y] != blank) return false;
@@ -67,6 +68,19 @@ inline Point erasePoint(vector<LegalMove> &vec, const Point &p) {
     return {0, 0};
 }
 
+inline int distanceToNearestChessPiece(const LegalMove &move) {
+    return move.priority % GRID_NUM;
+}
+
+inline bool hasKDisNeighbour(const int board[GRID_NUM][GRID_NUM], const LegalMove &move, int k) {
+    for (int i = max(move.p.x - k, 1); i <= min(move.p.x + k, GRID_NUM - 1); i++) {
+        for (int j = max(move.p.y - k, 1); j <= min(move.p.y + k, GRID_NUM - 1); j++) {
+            if (board[i][j] != blank) return true;
+        }
+    }
+    return move.p.x == GRID_NUM / 2 && move.p.y == GRID_NUM / 2;
+}
+
 SearchStepResult searchStep(GameFullStatus &status, int depth, int alpha, int beta) {
     searchStepTotalCounter++;
     if (cutoffTest(status, depth, alpha, beta)) {
@@ -92,7 +106,9 @@ SearchStepResult searchStep(GameFullStatus &status, int depth, int alpha, int be
     // 其余的按照LegalMove的权值排列。
     vector<Point> centers;
     make_centers(centers, status, CENTER_USED_COUNT);
-    vector<LegalMove> legalMoves = createMoves(status.board, centers);
+    vector<LegalMove> legalMoves = createMoves(status.board, centers,
+                                               ENABLE_RECORD_DISTANCE_TO_PIECE_MATRIX
+                                               ? distanceMatrixWhenAISearchBegin : nullptr);
     if (resultPrior.resultType == RECORD_INVALID) {
         Point eraseResult = erasePoint(legalMoves, resultPrior.item.bestMove);
         if (eraseResult.x) legalMoves.insert(legalMoves.begin(), LegalMove{eraseResult});
@@ -103,6 +119,9 @@ SearchStepResult searchStep(GameFullStatus &status, int depth, int alpha, int be
     int recordInHashType = EXACT_VAL;
     if (status.player == black) {
         for (const LegalMove &move: legalMoves) {
+            if (ENABLE_DIRECTLY_CALCULATE_DISTANCE_TO_PIECE_MATRIX &&
+                !hasKDisNeighbour(status.board, move, SKIP_MOVE_SEARCHING_BY_DISTENCE_TO_OTHER_PIECE__MINVALUE - 1))
+                continue;
             if (!status.putChess(move)) continue;
             auto res = searchStep(status, depth - 1, alpha, beta);
 #if defined(_DEBUG) && defined(DEBUG_RECORD_ALL_SEARCH_STEP)
@@ -125,6 +144,9 @@ SearchStepResult searchStep(GameFullStatus &status, int depth, int alpha, int be
         }
     } else if (status.player == white) {
         for (const LegalMove &move: legalMoves) {
+            if (ENABLE_DIRECTLY_CALCULATE_DISTANCE_TO_PIECE_MATRIX &&
+                !hasKDisNeighbour(status.board, move, SKIP_MOVE_SEARCHING_BY_DISTENCE_TO_OTHER_PIECE__MINVALUE - 1))
+                continue;
             if (!status.putChess(move)) continue;
             auto res = searchStep(status, depth - 1, alpha, beta);
 #if defined(_DEBUG) && defined(DEBUG_RECORD_ALL_SEARCH_STEP)
@@ -163,6 +185,8 @@ Point searchMove() //搜索函数主体
     vector<pair<int, Point>> fakeHistory = history; //搜索过程中的推演过程的下棋记录，非真实棋盘的记录。
     unsigned long long zobrist = calculateZobristFull(board, currentPlayer);
     GameFullStatus fullStatus{currentPlayer, board, fakeHistory, zobrist};
+
+    setupDistanceMatrix(distanceMatrixWhenAISearchBegin);
 
     searchStepTotalCounter = 0;
     SearchStepResult finalRes = SearchStepResult{fullStatus.player == black ? INT_MIN : INT_MAX,
