@@ -1,4 +1,5 @@
 #include "define.h"
+#include "hashsearch.h"
 
 int chessBoard[GRID_NUM][GRID_NUM];//定义棋盘
 int currentPlayer = 1;//1表示黑棋（电脑），2表示白棋（玩家）
@@ -10,10 +11,13 @@ vector<pair<int, Point>> history;//列表表示下棋历史记录，每个元素是pair，first表
 set<Point> emptyPlaces;
 
 void initializeGame() {
-    for (int i=0; i<GRID_NUM; i++) {
-        for (int j=0;j<GRID_NUM;j++) {
+    for (int i=1; i<GRID_NUM; i++) {
+        for (int j=1;j<GRID_NUM;j++) {
             auto res = emptyPlaces.insert(Point(i, j));
             assert(res.second);
         }
     }
+    initializeHashSearchModule();
 }
+
+string DebugAIOutputString;

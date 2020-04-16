@@ -99,6 +99,7 @@ static int record[GRID_NUM][GRID_NUM][4] = { 0 };//Æô·¢Ê½º¯ÊıÖĞ±ê¼Ç¸ÃÆå×ÓÊÇ·ñÒÑ¾
 int gameover(); //ÅĞ¶ÏÊÇ·ñÓÎÏ·½áÊø
 extern int _continuousPiecesCount[3];//µÚi¸öÔªËØ±íÊ¾Íæ¼Òiµ±Ç°ÔÚÆåÅÌÉÏ×î³¤Á¬ÖéµÄ³¤¶È¡£
 void updateContinuousPieceCount();
+#define BOARD_CENTER Point(8, 8)
 
 struct Point{
     int x;
@@ -108,6 +109,9 @@ struct Point{
     inline bool operator<(const Point& other) const {
         return x != other.x? x < other.x: y < other.y;
     }
+    inline bool operator==(const Point& other) const {
+        return x == other.x && y == other.y;
+    }
 };
 
 extern int currentPlayer;//1±íÊ¾ºÚÆå£¨µçÄÔ£©£¬2±íÊ¾°×Æå£¨Íæ¼Ò£©
@@ -116,4 +120,6 @@ extern vector<pair<int, Point>> history;//ÁĞ±í±íÊ¾ÏÂÆåÀúÊ·¼ÇÂ¼£¬Ã¿¸öÔªËØÊÇpair£¬
 extern set<Point> emptyPlaces;
 
 void initializeGame();
+
+extern string DebugAIOutputString;
 #endif

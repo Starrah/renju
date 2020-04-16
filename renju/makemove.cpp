@@ -6,7 +6,8 @@
 using namespace std;
 
 bool makeMove(Point p, int player) {
-    if(player == currentPlayer && inboard(p.x, p.y) && chessBoard[p.x][p.y] == blank){
+    if (emptyPlaces.size() == (GRID_NUM - 1) * (GRID_NUM - 1) && !(p == BOARD_CENTER)) return false;
+    if (player == currentPlayer && inboard(p.x, p.y) && chessBoard[p.x][p.y] == blank){
         chessBoard[p.x][p.y] = currentPlayer;
         history.emplace_back(currentPlayer, p);
         auto erasedCount = emptyPlaces.erase(p);

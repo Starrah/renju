@@ -1,7 +1,7 @@
 #include "define.h"
 #include "evaluate.h"
 
-int evaluate(const int board[GRID_NUM][GRID_NUM], int player,const vector<pair<int, Point>> playHistory)//估值算法，返回估值：整数，越大表示黑方越好。
+int evaluate(const int board[GRID_NUM][GRID_NUM], int player,const vector<pair<int, Point>>& playHistory)//估值算法，返回估值：整数，越大表示黑方越好。
 {
 	reset();
 	//遍历
@@ -24,7 +24,7 @@ int evaluate(const int board[GRID_NUM][GRID_NUM], int player,const vector<pair<i
 	 }
 	 else
 	 {
-		 score =- getScore(board,white_count, black_count, playHistory);
+		 score = (-getScore(board,white_count, black_count, playHistory));
 	 }
 
 	 return score;
@@ -338,7 +338,7 @@ void set_record(const int board[GRID_NUM][GRID_NUM],int p_x, int p_y, int left,i
 //黑无冲四白有活三 -9010
 //黑有两活三白无活三或眠三 9000
 //活二 活三 累加
-int getScore(const int board[GRID_NUM][GRID_NUM],int mine_count[],int oppo_count[],const vector<pair<int, Point>> playHistory)
+int getScore(const int board[GRID_NUM][GRID_NUM],int mine_count[],int oppo_count[],const vector<pair<int, Point>>& playHistory)
 {
 	if (mine_count[Five] > 0 && oppo_count[Five] > 0)
 	{
@@ -347,7 +347,7 @@ int getScore(const int board[GRID_NUM][GRID_NUM],int mine_count[],int oppo_count
 		vector<pair<int, Point>> newHistory = playHistory;
 		newHistory.pop_back();
 		int newBoard[GRID_NUM][GRID_NUM];
-		memcpy(newBoard, board,sizeof(board));
+		memcpy(newBoard, board, sizeof(int) * GRID_NUM * GRID_NUM);
 		newBoard[point.x][point.y] = 0;
 		return evaluate(newBoard, player, playHistory);
 	}
