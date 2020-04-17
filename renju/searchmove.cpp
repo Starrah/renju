@@ -130,6 +130,14 @@ SearchStepResult searchStep(GameFullStatus &status, int depth, int alpha, int be
 #else
             SearchStepResult curResult = {res.evaScore, move};
 #endif
+            // 如果是因为超时而提前返回的结果，这个结果就应该被丢弃而不应该被采信。
+            // 于是直接返回当前的最优结果即可。
+            if (timeOutTest(depth)) {
+                bool r = status.unputChess(move);
+                assert(r);
+                printLogWhenDebug(status, depth, alpha, beta, bestResult);
+                return bestResult;
+            }
             if (curResult.evaScore > bestResult.evaScore) {
                 bestResult = curResult;
                 alpha = max(alpha, bestResult.evaScore);
@@ -155,6 +163,14 @@ SearchStepResult searchStep(GameFullStatus &status, int depth, int alpha, int be
 #else
             SearchStepResult curResult = {res.evaScore, move};
 #endif
+            // 如果是因为超时而提前返回的结果，这个结果就应该被丢弃而不应该被采信。
+            // 于是直接返回当前的最优结果即可。
+            if (timeOutTest(depth)) {
+                bool r = status.unputChess(move);
+                assert(r);
+                printLogWhenDebug(status, depth, alpha, beta, bestResult);
+                return bestResult;
+            }
             if (curResult.evaScore < bestResult.evaScore) {
                 bestResult = curResult;
                 beta = min(beta, bestResult.evaScore);
