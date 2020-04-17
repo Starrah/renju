@@ -6,4 +6,6 @@
 
 void DebugEvaluate();
 
+void DebugSearchMove();
+
 #endif //RENJU_DEBUGCHESSEVALUATE_H

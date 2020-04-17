@@ -39,6 +39,8 @@ public:
 
 extern int root_depth;
 
+SearchStepResult searchStep(GameFullStatus &status, int depth, int alpha, int beta);
+
 Point searchMove();//ËÑË÷ºËÐÄ
 
 extern clock_t startClock;

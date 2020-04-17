@@ -1,5 +1,8 @@
 #include "debugChessEvaluate.h"
 #include "evaluate.h"
+#include "searchmove.h"
+#include "hashsearch.h"
+#include <sstream>
 
 #define DEBUG_EVALUATE_ENABLE
 
@@ -11,23 +14,23 @@
  * 填写好这个input vector后直接运行程序即可在控制台看到每个棋盘的估值
  */
 vector<string> input{
-            string() +
-            "000000000000000" +
-            "000000000000000" +
-            "000000000000000" +
-            "000000000000000" +
-            "000000000000000" +
-            "000000000000000" +
-            "000000100000000" +
-            "000000010000000" +
-            "000000202000000" +
-            "000000000000000" +
-            "000000000000000" +
-            "000000000000000" +
-            "000000000000000" +
-            "000000000000000" +
-            "000000000000000" +
-            "2",
+        string() +
+        "000000000000000" +
+        "000000000000000" +
+        "000000000000000" +
+        "000000000000000" +
+        "000000000000000" +
+        "000000020000000" +
+        "000010001000000" +
+        "000002022100000" +
+        "000000201000000" +
+        "000001020000000" +
+        "000000000000000" +
+        "000000000000000" +
+        "000000000000000" +
+        "000000000000000" +
+        "000000000000000" +
+        "2",
 
 //            string() +
 //            "000000000000000" +
@@ -85,22 +88,34 @@ vector<string> input{
 //
 };
 
-void _convertInput(int result[GRID_NUM][GRID_NUM] , const string& str){
-    for (int i = 0; i < 15 * 15; i++){
+void _convertInput(int result[GRID_NUM][GRID_NUM], const string &str) {
+    for (int i = 0; i < 15 * 15; i++) {
         int lineNo = (i / 15) + 1;
         int columnNo = (i % 15) + 1;
         result[lineNo][columnNo] = str[i] - '0';
     }
 }
 
-void DebugEvaluate(){
+void DebugEvaluate() {
 #if defined(_DEBUG) && defined (DEBUG_EVALUATE_ENABLE)
-    for (const string& one: input) {
+    for (const string &one: input) {
+        initializeGame();
         int Board[GRID_NUM][GRID_NUM];
         _convertInput(Board, one);
-        int player = one[15*15] - '0';
+        int player = one[15 * 15] - '0';
         int score = evaluate(Board, player, vector<pair<int, Point>>());
         cout << "DebugEvaluate: " << score << endl;
+    }
+#endif
+}
+
+void DebugSearchMove() {
+#if defined(_DEBUG) || defined (DEBUG_EVALUATE_ENABLE)
+    for (const string &one: input) {
+        _convertInput(chessBoard, one);
+        currentPlayer = oppositePlayer(one[15 * 15] - '0');
+        history.clear();
+        searchMove();
     }
 #endif
 }

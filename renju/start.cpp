@@ -43,6 +43,7 @@ void reviewChess() {
 
 int main() {
     DebugEvaluate();
+//    DebugSearchMove();
 
     cout << "*************五子棋人机对弈AI*************" << endl;
     cout << "输入: replay  播放复盘" << endl;

@@ -185,7 +185,7 @@ Point searchMove() //ËÑË÷º¯ÊýÖ÷Ìå
     unsigned long long zobrist = calculateZobristFull(board, currentPlayer);
     GameFullStatus fullStatus{currentPlayer, board, fakeHistory, zobrist};
 
-    setupDistanceMatrix(distanceMatrixWhenAISearchBegin);
+    if (ENABLE_RECORD_DISTANCE_TO_PIECE_MATRIX) setupDistanceMatrix(distanceMatrixWhenAISearchBegin);
 
     searchStepTotalCounter = 0;
     SearchStepResult finalRes = SearchStepResult{fullStatus.player == black ? INT_MIN : INT_MAX,
