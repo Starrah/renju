@@ -42,6 +42,9 @@
     <ClCompile Include="debugChessEvaluate.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="hashsearch.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="define.h">
@@ -69,6 +72,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="stopSearchSiblingsTest.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="hashsearch.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
