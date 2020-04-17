@@ -190,6 +190,8 @@ void analysisLine(const int board[GRID_NUM][GRID_NUM], int player,int opponent, 
     //活二 XMMX	和上面是重复棋型 
 	bool rightTwo = false;
 	bool leftTwo = false;
+	bool right_LThree = false;
+	bool right_SThree = false;
 	if (range == 2)
 	{
 		if (line[right_index + 1] == Empty)
@@ -210,11 +212,13 @@ void analysisLine(const int board[GRID_NUM][GRID_NUM], int player,int opponent, 
 					//XMMXMX
 					if (line[left_index - 1] == Empty)
 					{
+						right_LThree = true;
 						count[LThree]++;
 					}
 					//PMMXMX
 					else if (line[left_index - 1] == opponent)
 					{
+						right_LThree = true;
 						 count[SThree]++;
 					}
 				}
@@ -236,12 +240,22 @@ void analysisLine(const int board[GRID_NUM][GRID_NUM], int player,int opponent, 
 					//XMXMMX
 					if (line[left_index - 2] == Empty)
 					{
-						count[LThree]++;
+						if (right_LThree)
+						{
+							count[SThree]++;
+						}
+						else 
+						{
+							count[LThree]++;
+						}
 					}
 					//PMXMMX
 					else if (line[left_index - 2] == opponent)
 					{
-						count[SThree]++;
+						if (!right_LThree)
+						{
+							count[SThree]++;
+						}
 					}
 				}
 				//XMMX
