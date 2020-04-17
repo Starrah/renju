@@ -135,32 +135,35 @@ void analysisLine(const int board[GRID_NUM][GRID_NUM], int player,int opponent, 
 	//ÃßÈý PMMMXX,XXMMMP,PXMMMXP
 	if (range == 3)
 	{
-		
+		bool left_four = false;
+		bool right_four = false;
 		if (line[right_index + 1] == Empty)
 		{
 			//MMMXM
 			if (line[right_index + 2] == player)
 			{
+				right_four = true;
 				count[SFour] += 1;
 				record[p_x + (right_index + 2 - 4)*dir_set[dir_idx].x][p_y + (right_index + 2 - 4)*dir_set[dir_idx].y][dir_idx] = 1;
 			}
 			//PMMMXX
-			if (line[right_index + 2] == Empty && line[left_index - 1] == opponent)
+			else if (line[right_index + 2] == Empty && line[left_index - 1] == opponent)
 			{
 				count[SThree] += 1;
-			}
+			}	 
 		}
-		
+
 		if (line[left_index - 1] == Empty)
 		{
 			//MXMMM
 			if (line[left_index - 2] == player)
 			{
+				left_four = true;
 				count[SFour] += 1;
 				record[p_x + (left_index - 2 - 4)*dir_set[dir_idx].x][p_y + (right_index - 2 - 4)*dir_set[dir_idx].y][dir_idx] = 1;
 			}
 			//XXMMMP
-			if (line[left_index - 2] == Empty && line[right_index + 1] == opponent)
+			else if (line[left_index - 2] == Empty && line[right_index + 1] == opponent)
 			{
 				count[SThree] += 1;
 			}
@@ -169,7 +172,7 @@ void analysisLine(const int board[GRID_NUM][GRID_NUM], int player,int opponent, 
 		if (line[left_index - 1] == Empty && line[right_index + 1] == Empty)
 		{
 			//XXMMMX,XMMMXX
-			if (line[left_index - 2] == Empty || line[right_index + 2] == Empty)
+			if (!left_four&&!right_four&&line[left_index - 2] == Empty || line[right_index + 2] == Empty)
 			{
 				count[LThree] += 1;
 			}
