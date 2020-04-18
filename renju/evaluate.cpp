@@ -172,7 +172,7 @@ void analysisLine(const int board[GRID_NUM][GRID_NUM], int player,int opponent, 
 		if (line[left_index - 1] == Empty && line[right_index + 1] == Empty)
 		{
 			//XXMMMX,XMMMXX
-			if (!left_four&&!right_four&&line[left_index - 2] == Empty || line[right_index + 2] == Empty)
+			if (!left_four&&!right_four&&(line[left_index - 2] == Empty || line[right_index + 2] == Empty))
 			{
 				count[LThree] += 1;
 			}
@@ -222,7 +222,7 @@ void analysisLine(const int board[GRID_NUM][GRID_NUM], int player,int opponent, 
 						 count[SThree]++;
 					}
 				}
-				else if (line[right_index + 3] = opponent)
+				else if (line[right_index + 3] == opponent)
 				{
 					//XMMXMP
 					if (line[left_index - 1] == Empty)
