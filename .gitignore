@@ -10,3 +10,12 @@ cmake-build-*
 /.vscode/
 ChessSave.txt
 *.gch
+/template/acm-sigproc-latex/sigproc-sp.aux
+/template/acm-sigproc-latex/sigproc-sp.fdb_latexmk
+/template/acm-sigproc-latex/sigproc-sp.fls
+/template/acm-sigproc-latex/sigproc-sp.log
+/template/acm-sigproc-latex/sigproc-sp.synctex.gz
+/template/acm-sigproc-latex/fly-eps-converted-to.pdf
+/template/acm-sigproc-latex/missfont.log
+/template/acm-sigproc-latex/flies-eps-converted-to.pdf
+/template/acm-sigproc-latex/sigproc-sp.pdf
