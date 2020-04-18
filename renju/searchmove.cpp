@@ -207,12 +207,12 @@ Point searchMove() //搜索函数主体
     SearchStepResult finalRes = SearchStepResult{fullStatus.player == black ? INT_MIN : INT_MAX,
                                                  LegalMove{Point(0, 0), 0}};
     int currentEva = evaluate(board, oppositePlayer(currentPlayer), fullStatus.playHistory);
+    setStartClock(); // 开始计时
     if (currentEva >= MUST_WIN_VALUE) {
         root_depth = 1;
         // 对于黑方可以必杀结束游戏的情况，就只进行一层搜索以便可以直接结束游戏、不会拖延。
         finalRes = searchStep(fullStatus, 1, INT_MIN, INT_MAX);
     } else {
-        setStartClock();//开始计时
         for (root_depth = ROOT_DEPTH_START; root_depth <= MAX_ROOT_DEPTH; root_depth++) {
             auto result = searchStep(fullStatus, root_depth, INT_MIN, INT_MAX);
             assert(fullStatus.player == currentPlayer &&
