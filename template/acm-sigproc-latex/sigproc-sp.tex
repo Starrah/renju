@@ -101,33 +101,22 @@
 \maketitle
 
 \begin{abstract}
-基于Minimax搜索和$\alpha$-$\beta$优化剪枝的方法，我们 哈哈哈This pa哈per provides a sample of a \LaTeX\ document which conforms to
-the formatting guidelines for ACM SIG Proceedings.
-It complements the document \textit{Author's Guide to Preparing
-ACM SIG Proceedings Using \LaTeX$2_\epsilon$\ and Bib\TeX}. This
-source file has been written with the intention of being
-compiled under \LaTeX$2_\epsilon$\ and BibTeX.
-
-The developers have tried to include every imaginable sort
-of ``bells and whistles", such as a subtitle, footnotes on
-title, subtitle and authors, as well as in the text, and
-every optional component (e.g. Acknowledgments, Additional
-Authors, Appendices), not to mention examples of
-equations, theorems, tables and figures.
-
-To make best use of this sample document, run it through \LaTeX\
-and BibTeX, and compare this source code with the printed
-output produced by the dvi file.
+基于Minimax搜索和$\alpha$-$\beta$优化剪枝的方法，我们编写了一个可进行人机对弈的AI程序。程序从当前状态开始，
+依次考虑双方每一种可能动作及其引起的结果状态，对由此产生的状态树进行深度优先的搜索。在搜索过程中，叶子结点使用启发式方法对
+当前状态进行估值，而其他的结点中，如果是属于AI行棋的则返回所有子节点搜索结果的最大值，否则如果是属于对手（人）行棋的则返回
+最小值。此外，上层结点在搜索过程中会向其的下层结点传入其已经找到的最优方案的值，如果下层结点在搜索过程中发现自身返回的结果
+已经不可能被上层结点采纳为最好方案，则应剪除剩余分支、提前结束搜索，从而达到减小计算量的目的。\\
+除此之外，我们还使用了散列记录搜索过程中找到的结点的搜索结果，以便之后的搜索查表使用、避免重复搜索相同局面；
+使用迭代深度搜索方法以充分利用有限的时间完成尽可能多的搜索，并让浅层的搜索结果为高层的搜索提供子节点搜索顺序的参考。
+根据五子棋的一般规律和特点，我们还引入了一种特别的剪枝方法：通过剪除对距离棋盘上任何现有棋子距离都很远的空位置的搜索
+（这样的位置往往是不会得到很大的收益的），从而进一步降低每个搜索结点的平均分枝数，以加快搜索效率、加深在有限时间内可以搜索
+到的层数。
+最后，我们在现有框架的基础上加入了悔棋和复盘的功能，并丰富了游戏内的提示文字、对所有输入进行正确性检查和合理的报错提示，以
+增强人类玩家使用本程序的体验。\\
+经过我们的反复调试和优化，在实验环境下，程序可以在$5s$内搜索平均$2.5\times10^6$个结点，对状态树完整地完成$4-6$层的搜索，
+能够搜索到效用很高的结果。程序在与人类的实际对战中也取得了良好的效果，有时可以提前6-10回合就找到策略，通过连续的形成活三、
+冲四 让对手不得不根据自己的节奏下棋，最终形成双三、三四、双四等胜利结果。
 \end{abstract}
-
-% A category with the (minimum) three required fields
-\category{H.4}{Information Systems Applications}{Miscellaneous}
-%A category including the fourth, optional field follows...
-\category{D.2.8}{Software Engineering}{Metrics}[complexity measures, performance measures]
-
-\terms{Delphi theory}
-
-\keywords{ACM proceedings, \LaTeX, text tagging} % NOT required for Proceedings
 
 \section{Introduction}
 The \textit{proceedings} are the records of a conference.
@@ -407,7 +396,7 @@ that needs to span two columns of text.}
 \end{figure*}
 and don't forget to end the environment with
 {figure*}, not {figure}!
- 
+
 There is one other similar construct environment, which is
 already set up
 for you; i.e. you must \textit{not} use
