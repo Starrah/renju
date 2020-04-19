@@ -41,7 +41,7 @@
 \usepackage{CTEX}
 %\defaultfontfeatures{Mapping=tex-text} %如果没有它，会有一些 tex 特殊字符无法正常使用，比如连字符。
 
-\usepackage{algorithm}
+\usepackage{algorithmicx,algorithm}
 \usepackage{algpseudocode}
 \usepackage{bm}
 
@@ -227,13 +227,13 @@ SearchStep函数则表示对一个结点的完整搜索过程，其内部主要�
 这里我们选用的是Zobrist键值。\\
 Zobrist键值通过为棋盘上的每个位置、每个棋子分配64位随机整数，通过异或运算产生键值，能够实现当在棋盘上放置或撤下单颗棋子时
 可以在$O(1)$的时间内完成键值的计算，因而与需要遍历整个棋盘才能计算完成的键值计算算法相比具有很大的优势。\\
-在散列表方面，出于效率考虑，我们使用了C++标准库std::unordered_set，并在游戏开局前预先调整其内的散列表大小为3M，从而可以
+在散列表方面，出于效率考虑，我们使用了C++标准库$std::unordered_set$，并在游戏开局前预先调整其内的散列表大小为3M，从而可以
 获得最优的效率。\\
 此外，在现实生活中，智能体做出决策的时间是有限的，因而进行固定深度的限定深度搜索很可能浪费一定的搜索时间。为了充分的利用
 给定的时间，我们引入了迭代深度搜索，即搜索所限定的深度随着时间递增：如果限定深度为$k-1$的搜索全部完成时给定的时间没有用尽，
 则立即开启一个限定深度为$k$的搜索；在搜索的过程中，在一定层次以上的结点处检查耗时，如果发现时间已经用尽则搜索函数立刻返回。\\
 但更重要的其实是，迭代深度搜索有利于在后续的搜索过程中更好的优化子结点的搜索顺序
-在“纯粹的”Minimax\ $\alpha-\beta$算法的基础上，对每个结点进行搜索前可以
+在“纯粹的”$Minimax\ \alpha-\beta$算法的基础上，对每个结点进行搜索前可以
 
 \subsection{\textbf{合法行动有序列表的产生（CreateMoves模块）}}
 五子棋的一般经验表明，在大多数情况下效用高的下棋位置要么是偏向进攻的，即延长自己已经有的连珠使其接近五连珠；
@@ -243,7 +243,7 @@ Zobrist键值通过为棋盘上的每个位置、每个棋子分配64位随机�
 因此，在产生合法行动的有序列表和安排它们的初始搜索顺序时，我们计算每个空位置到最近两回合的下棋位置的距离最小值，并进行升序
 排列产生搜索顺序，如算法1所示。
 \begin{algorithm}
-       \algsetup{\tiny}
+       \algsetup {\tiny}
        \scriptsize
        \caption{产生合法行动的有序列表}
        \begin{algorithmic}[1] %每行显示行号
@@ -313,278 +313,6 @@ Zobrist键值通过为棋盘上的每个位置、每个棋子分配64位随机�
        \end{algorithmic}
 \end{algorithm}
 
-\qquad MinimaxWe ha \qquad ve alrea \qquad dy seen several typeface changes in this sample.  You
-can indicate italicized words or phrases in your text with
-the command \texttt{{\char'134}textit}; emboldening with the
-command \texttt{{\char'134}textbf}
-and typewriter-style (for instance, for computer code) with
-\texttt{{\char'134}texttt}.  But remember, you do not
-have to indicate typestyle changes when such changes are
-part of the \textit{structural} elements of your
-article; for instance, the heading of this subsection will
-be in a sans serif\footnote{A third footnote, here.
-Let's make this a rather short one to
-see how it looks.} typeface, but that is handled by the
-document class file. Take care with the use
-of\footnote{A fourth, and last, footnote.}
-the curly braces in typeface changes; they mark
-the beginning and end of
-the text that is to be in the different typeface.
-
-You can use whatever symbols, accented characters, or
-non-English characters you need anywhere in your document;
-you can find a complete list of what is
-available in the \textit{\LaTeX\
-User's Guide}\cite{Lamport:LaTeX}.
-
-\subsection{Math Equations}
-You may want to display math equations in three distinct styles:
-inline, numbered or non-numbered display.  Each of
-the three are discussed in the next sections.
-
-\subsubsection{Inline (In-text) Equations}
-A formula that appears in the running text is called an
-inline or in-text formula.  It is produced by the
-\textbf{math} environment, which can be
-invoked with the usual \texttt{{\char'134}begin. . .{\char'134}end}
-construction or with the short form \texttt{\$. . .\$}. You
-can use any of the symbols and structures,
-from $\alpha$ to $\omega$, available in
-\LaTeX\cite{Lamport:LaTeX}; this section will simply show a
-few examples of in-text equations in context. Notice how
-this equation: \begin{math}\lim_{n\rightarrow \infty}x=0\end{math},
-set here in in-line math style, looks slightly different when
-set in display style.  (See next section).
-
-\subsubsection{Display Equations}
-A numbered display equation -- one set off by vertical space
-from the text and centered horizontally -- is produced
-by the \textbf{equation} environment. An unnumbered display
-equation is produced by the \textbf{displaymath} environment.
-
-Again, in either environment, you can use any of the symbols
-and structures available in \LaTeX; this section will just
-give a couple of examples of display equations in context.
-First, consider the equation, shown as an inline equation above:
-\begin{equation}\lim_{n\rightarrow \infty}x=0\end{equation}
-Notice how it is formatted somewhat differently in
-the \textbf{displaymath}
-environment.  Now, we'll enter an unnumbered equation:
-\begin{displaymath}\sum_{i=0}^{\infty} x + 1\end{displaymath}
-and follow it with another numbered equation:
-\begin{equation}\sum_{i=0}^{\infty}x_i=\int_{0}^{\pi+2} f\end{equation}
-just to demonstrate \LaTeX's able handling of numbering.
-
-\subsection{Citations}
-Citations to articles \cite{bowman:reasoning, clark:pct, braams:babel, herlihy:methodology},
-conference
-proceedings \cite{clark:pct} or books \cite{salas:calculus, Lamport:LaTeX} listed
-in the Bibliography section of your
-article will occur throughout the text of your article.
-You should use BibTeX to automatically produce this bibliography;
-you simply need to insert one of several citation commands with
-a key of the item cited in the proper location in
-the \texttt{.tex} file \cite{Lamport:LaTeX}.
-The key is a short reference you invent to uniquely
-identify each work; in this sample document, the key is
-the first author's surname and a
-word from the title.  This identifying key is included
-with each item in the \texttt{.bib} file for your article.
-
-The details of the construction of the \texttt{.bib} file
-are beyond the scope of this sample document, but more
-information can be found in the \textit{Author's Guide},
-and exhaustive details in the \textit{\LaTeX\ User's
-Guide}\cite{Lamport:LaTeX}.
-
-This article shows only the plainest form
-of the citation command, using \texttt{{\char'134}cite}.
-This is what is stipulated in the SIGS style specifications.
-No other citation format is endorsed.
-
-\subsection{Tables}
-Because tables cannot be split across pages, the best
-placement for them is typically the top of the page
-nearest their initial cite.  To
-ensure this proper ``floating'' placement of tables, use the
-environment \textbf{table} to enclose the table's contents and
-the table caption.  The contents of the table itself must go
-in the \textbf{tabular} environment, to
-be aligned properly in rows and columns, with the desired
-horizontal and vertical rules.  Again, detailed instructions
-on \textbf{tabular} material
-is found in the \textit{\LaTeX\ User's Guide}.
-
-Immediately following this sentence is the point at which
-Table 1 is included in the input file; compare the
-placement of the table here with the table in the printed
-dvi output of this document.
-
-\begin{table}
-\centering
-\caption{Frequency of Special Characters}
-\begin{tabular}{|c|c|l|} \hline
-Non-English or Math&Frequency&Comments\\ \hline
-\O & 1 in 1,000& For Swedish names\\ \hline
-$\pi$ & 1 in 5& Common in math\\ \hline
-\$ & 4 in 5 & Used in business\\ \hline
-$\Psi^2_1$ & 1 in 40,000& Unexplained usage\\
-\hline\end{tabular}
-\end{table}
-
-To set a wider table, which takes up the whole width of
-the page's live area, use the environment
-\textbf{table*} to enclose the table's contents and
-the table caption.  As with a single-column table, this wide
-table will ``float" to a location deemed more desirable.
-Immediately following this sentence is the point at which
-Table 2 is included in the input file; again, it is
-instructive to compare the placement of the
-table here with the table in the printed dvi
-output of this document.
-
-
-\begin{table*}
-\centering
-\caption{Some Typical Commands}
-\begin{tabular}{|c|c|l|} \hline
-Command&A Number&Comments\\ \hline
-\texttt{{\char'134}alignauthor} & 100& Author alignment\\ \hline
-\texttt{{\char'134}numberofauthors}& 200& Author enumeration\\ \hline
-\texttt{{\char'134}table}& 300 & For tables\\ \hline
-\texttt{{\char'134}table*}& 400& For wider tables\\ \hline\end{tabular}
-\end{table*}
-% end the environment with {table*}, NOTE not {table}!
-
-\subsection{Figures}
-Like tables, figures cannot be split across pages; the
-best placement for them
-is typically the top or the bottom of the page nearest
-their initial cite.  To ensure this proper ``floating'' placement
-of figures, use the environment
-\textbf{figure} to enclose the figure and its caption.
-
-This sample document contains examples of \textbf{.eps}
-and \textbf{.ps} files to be displayable with \LaTeX.  More
-details on each of these is found in the \textit{Author's Guide}.
-
-\begin{figure}
-\centering
-\epsfig{file=fly.eps}
-\caption{A sample black and white graphic (.eps format).}
-\end{figure}
-
-\begin{figure}
-\centering
-\epsfig{file=fly.eps, height=1in, width=1in}
-\caption{A sample black and white graphic (.eps format)
-that has been resized with the \texttt{epsfig} command.}
-\end{figure}
-
-
-As was the case with tables, you may want a figure
-that spans two columns.  To do this, and still to
-ensure proper ``floating'' placement of tables, use the environment
-\textbf{figure*} to enclose the figure and its caption.
-
-Note that either {\textbf{.ps}} or {\textbf{.eps}} formats are
-used; use
-the \texttt{{\char'134}epsfig} or \texttt{{\char'134}psfig}
-commands as appropriate for the different file types.
-
-\subsection{Theorem-like Constructs}
-Other common constructs that may occur in your article are
-the forms for logical constructs like theorems, axioms,
-corollaries and proofs.  There are
-two forms, one produced by the
-command \texttt{{\char'134}newtheorem} and the
-other by the command \texttt{{\char'134}newdef}; perhaps
-the clearest and easiest way to distinguish them is
-to compare the two in the output of this sample document:
-
-This uses the \textbf{theorem} environment, created by
-the\linebreak\texttt{{\char'134}newtheorem} command:
-\newtheorem{theorem}{Theorem}
-\begin{theorem}
-Let $f$ be continuous on $[a,b]$.  If $G$ is
-an antiderivative for $f$ on $[a,b]$, then
-\begin{displaymath}\int^b_af(t)dt = G(b) - G(a).\end{displaymath}
-\end{theorem}
-
-The other uses the \textbf{definition} environment, created
-by the \texttt{{\char'134}newdef} command:
-\newdef{definition}{Definition}
-\begin{definition}
-If $z$ is irrational, then by $e^z$ we mean the
-unique number which has
-logarithm $z$: \begin{displaymath}{\log e^z = z}\end{displaymath}
-\end{definition}
-
-\begin{figure}
-\centering
-\psfig{file=rosette.ps, height=1in, width=1in,}
-\caption{A sample black and white graphic (.ps format) that has
-been resized with the \texttt{psfig} command.}
-\end{figure}
-
-Two lists of constructs that use one of these
-forms is given in the
-\textit{Author's  Guidelines}.
-
-\begin{figure*}
-\centering
-\epsfig{file=flies.eps}
-\caption{A sample black and white graphic (.eps format)
-that needs to span two columns of text.}
-\end{figure*}
-and don't forget to end the environment with
-{figure*}, not {figure}!
-
-There is one other similar construct environment, which is
-already set up
-for you; i.e. you must \textit{not} use
-a \texttt{{\char'134}newdef} command to
-create it: the \textbf{proof} environment.  Here
-is a example of its use:
-\begin{proof}
-Suppose on the contrary there exists a real number $L$ such that
-\begin{displaymath}
-\lim_{x\rightarrow\infty} \frac{f(x)}{g(x)} = L.
-\end{displaymath}
-Then
-\begin{displaymath}
-l=\lim_{x\rightarrow c} f(x)
-= \lim_{x\rightarrow c}
-\left[ g{x} \cdot \frac{f(x)}{g(x)} \right ]
-= \lim_{x\rightarrow c} g(x) \cdot \lim_{x\rightarrow c}
-\frac{f(x)}{g(x)} = 0\cdot L = 0,
-\end{displaymath}
-which contradicts our assumption that $l\neq 0$.
-\end{proof}
-
-Complete rules about using these environments and using the
-two different creation commands are in the
-\textit{Author's Guide}; please consult it for more
-detailed instructions.  If you need to use another construct,
-not listed therein, which you want to have the same
-formatting as the Theorem
-or the Definition\cite{salas:calculus} shown above,
-use the \texttt{{\char'134}newtheorem} or the
-\texttt{{\char'134}newdef} command,
-respectively, to create it.
-
-\subsection*{A {\secit Caveat} for the \TeX\ Expert}
-Because you have just been given permission to
-use the \texttt{{\char'134}newdef} command to create a
-new form, you might think you can
-use \TeX's \texttt{{\char'134}def} to create a
-new command: \textit{Please refrain from doing this!}
-Remember that your \LaTeX\ source code is primarily intended
-to create camera-ready copy, but may be converted
-to other forms -- e.g. HTML. If you inadvertently omit
-some or all of the \texttt{{\char'134}def}s recompilation will
-be, to say the least, problematic.
-
 \section{启发式函数}
 在现实情况中，应该在合理的时间内做出决策。为实现此目的，应尽早截断搜索，将启发式评估函数用于搜索中的状态，有效的将非终止结点转变为终止结点。\\
 更改后的启发式搜索如下：\\
@@ -647,6 +375,7 @@ min_{a\in Actions(s)}HMinmax(Result(s,a),d+1), & player(s)=MIN.
 伪代码如下：\\
 \begin{tiny}
 \begin{algorithm}
+ \algsetup{\tiny}
 	\caption{棋型统计策略}
 	\begin{algorithmic}[1] %每行显示行号
 		\Require  当前棋盘 $board$、当前棋子坐标$(i,j)$、方向数组$dir_s$
@@ -700,15 +429,14 @@ min_{a\in Actions(s)}HMinmax(Result(s,a),d+1), & player(s)=MIN.
 维护一个下棋历史数组。\\
 悔棋时，撤销最后下的两手棋，数组弹出元素，更新棋盘。\\
 将复盘的下棋历史存储在同目录的ChessSave.txt下，每次棋局结束时，提示是否要存盘，若存盘则将下棋历史存储在ChessSave.txt中，每次棋局开始时，提示是否要复盘，若需要复盘则播放ChessSave.txt中的历史记录。\\
-%ACKNOWLEDGMENTS are optional
-\section{Acknowledgments}
-This section is optional; it is a location for you
-to acknowledge grants, funding, editing assistance and
-what have you.  In the present case, for example, the
-authors would like to thank Gerald Murray of ACM for
-his help in codifying this \textit{Author's Guide}
-and the \textbf{.cls} and \textbf{.tex} files that it describes.
 
+\section{实验收获与体会}
+在设计和实现人机对弈五子棋AI的过程中，我们对Minimax搜索、$\alpha-\beta$优化剪枝、启发式函数、迭代深度搜索有了更加全面和深入的了解。\\
+在早期粗略的设计实现后，AI其实已经可以实现基本的对弈功能了，但它的下棋总会非常的奇怪：不去堵对方的成三、下的位置常常让人摸不着头脑。于是我们不断的去优化它——加入了优化剪枝、迭代深度搜索让它能够搜索的步数更多，修改启发函数让它能在较小的时间内能够做出较优的判断，也实验了一种优化方法——舍弃掉““荒郊野岭”即距离棋子较远的位置，想法是在交战中心作战是更有效率的方法，实验之后，效率得到了相当大的优化。\\
+在设计的过程中，我们认识到了对抗搜索方法的优越性，也体会到了先验知识的重要性，启发式函数、结合游戏实际的优化策略往往能够使决策变得更高效。\\
+五子棋与其他棋类游戏如围棋相比，是相对简单的，与生活实际中的很多决策情境相比更是不值一提，人工智能如何能够在更复杂的情境下更高效的完成任务呢？我想我们还要继续学习。\\
+最后非常感谢老师和助教的指导！\\
+%ACKNOWLEDGMENTS are optional
 %
 % The following two commands are all you need in the
 % initial runs of your .tex file to
@@ -721,57 +449,6 @@ and the \textbf{.cls} and \textbf{.tex} files that it describes.
 \cite{cnblogs2}
 \cite{xqbase1}
 \cite{xqbase2}
-\cite{xqbase3}
-  % sigproc.bib is the name of the Bibliography in this case
-% You must have a proper ".bib" file
-%  and remember to run:
-% latex bibtex latex latex
-% to resolve all references
-%
-% ACM needs 'a single self-contained file'!
-%
-%APPENDICES are optional
-%\balancecolumns
-\appendix
-%Appendix A
-\section{Headings in Appendices}
-The rules about hierarchical headings discussed above for
-the body of the article are different in the appendices.
-In the \textbf{appendix} environment, the command
-\textbf{section} is used to
-indicate the start of each Appendix, with alphabetic order
-designation (i.e. the first is A, the second B, etc.) and
-a title (if you include one).  So, if you need
-hierarchical structure
-\textit{within} an Appendix, start with \textbf{subsection} as the
-highest level. Here is an outline of the body of this
-document in Appendix-appropriate form:
-\subsection{Introduction}
-\subsection{The Body of the Paper}
-\subsubsection{Type Changes and  Special Characters}
-\subsubsection{Math Equations}
-\paragraph{Inline (In-text) Equations}
-\paragraph{Display Equations}
-\subsubsection{Citations}
-\subsubsection{Tables}
-\subsubsection{Figures}
-\subsubsection{Theorem-like Constructs}
-\subsubsection*{A Caveat for the \TeX\ Expert}
-\subsection{Conclusions}
-\subsection{Acknowledgments}
-\subsection{Additional Authors}
-This section is inserted by \LaTeX; you do not insert it.
-You just add the names and information in the
-\texttt{{\char'134}additionalauthors} command at the start
-of the document.
-\subsection{References}
-% This next section command marks the start of
-% Appendix B, and does not continue the present hierarchy
-\section{More Help for the Hardy}
-The acm\_proc\_article-sp document class file itself is chock-full of succinct
-and helpful comments.  If you consider yourself a moderately
-experienced to expert user of \LaTeX, you may find reading
-it useful but please remember not to change it.
-\balancecolumns
+\cite{xqbase3} 
 % That's all folks!
 \end{document}
