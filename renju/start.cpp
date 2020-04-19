@@ -42,9 +42,10 @@ void reviewChess() {
 }
 
 int main() {
+#ifdef _DEBUG
     DebugEvaluate();
 //    DebugSearchMove();
-
+#endif
     cout << "*************五子棋人机对弈AI*************" << endl;
     cout << "输入: replay  播放复盘" << endl;
     cout << "输入: newblack  电脑先手" << endl;

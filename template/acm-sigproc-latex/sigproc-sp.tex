@@ -37,6 +37,13 @@
 \usepackage{fontspec,xunicode}
 \usepackage{CTEX}
 %\defaultfontfeatures{Mapping=tex-text} %如果没有它，会有一些 tex 特殊字符无法正常使用，比如连字符。
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+
+\floatname{algorithm}{算法}
+\renewcommand{\algorithmicrequire}{\textbf{输入:}}
+\renewcommand{\algorithmicensure}{\textbf{输出:}}
 
 \setCJKmainfont[BoldFont={SimHei}]{SimSun}
 \setCJKsansfont{KaiTi}
@@ -156,33 +163,70 @@ $\alpha-\beta$搜索的特点决定了其剪枝的效果受搜索结点的先后
        \item 散列表优化和迭代深度搜索
 \end{enumerate}
 
-\\一般的下棋经验告诉我们，在大多数情况下，效用高的下棋位置要么是
+一般的下棋经验告诉我们，在大多数情况下，效用高的下棋位置要么是
 进攻的，即延长自己已经有的连珠，使其接近五连珠；要么是防守的，即破坏、截断对手的连珠，避免其在未来成为五连珠。无论哪种情况
 ，我们都往往应该在自己现有的棋子周边或对方现有的棋子周边下棋，而一般不会在距离任何现有棋子都很远的位置下棋；在概率意义上，的通过剪除对距离棋盘上任何现有棋子距离都很远的空位置的搜索
-（这样的位置往往是不会得到很大的收益的），从而进一步降低每个搜索结点的平均分枝数，以加快搜索效率、加深在有限时间内可以搜索到的层数。
+（这样的位置往往是不会得到很大的收益的），从而进一步降低每个搜索结点的平均分枝数，以加快搜索效率、加深在有限时间内可以搜索到的层数。\\
 
 \section{\textbf{方法}}
 
 \subsection{\textbf{程序基本框架}}
 总体上程序可以分为两个部分：通用五子棋运行逻辑部分和AI智能体部分。详细的文件模块介绍如表1所示。\\
-通用五子棋逻辑部分循环地从控制台读取人类玩家的输入、调用AI智能体部分提供的接口获取AI的输入，对他们的输入进行合法性验证后操
-作棋盘下棋、判断游戏是否结束，并控制棋盘的打印、悔棋、存盘、复盘等操作。\\
-AI智能体部分为通用五子棋运行逻辑部分提供一个接口，接受某一时刻的棋盘等游戏状态信息，并返回一个AI此时希望下棋的位置。\\
 \begin{table*}
        \centering
        \caption{文件模块一览表}
        \begin{tabular}{|c|c|l|} \hline
        所属部分 & 文件名（不含扩展名） & 说明\\ \hline
-       运行逻辑 & start & 游戏主循环所在地，控制复盘、存盘、读取人类和AI的动作输入、打印棋盘等\\ \hline
-       运行逻辑 & makemove & 在棋盘上指定位置下棋或撤销最近一步下棋，更新游戏状态\\ \hline
-       \texttt{{\char'134}table}& 300 & For tables\\ \hline
-       \texttt{{\char'134}table*}& 400& For wider tables\\ \hline
+       运行逻辑 & define & 定义各类基础的游戏数据结构如棋盘、点、行棋记录、启发式估值等\\ \hline
+       运行逻辑 & start & 游戏主循环，控制复盘、存盘、读取人类和AI的动作输入、打印棋盘等\\ \hline
+       运行逻辑 & makemove & 解析控制台输入，获取AI输入，验证合法性，进行下棋，撤销下棋\\ \hline
+       运行逻辑 & gameover & 判断游戏是否结束和胜负\\ \hline
+       运行逻辑 & printchessboard & 把棋盘打印在控制台上\\ \hline
+       AI & evaluate & 对一个完整游戏状态进行局面估值\\ \hline
+       AI & createmoves & 产生所有的可行动作和循环遍历时的先后顺序构成的有序列表\\ \hline
+       AI & searchmove & 对局面进行递归的、迭代深度的Minimax搜索和$\alpha-\beta$优化剪枝\\ \hline
+       AI & hashsearch & 定义散列表，提供接口计算局面的键值、修改和查询散列表中的数据\\ \hline
+       AI & cutoffTest & 判定是否停止搜索子节点、调用启发式函数对局面进行估值\\ \hline
+       AI & stopSearchSiblingsTest & 判定是否因$\alpha-\beta$或超时等，对未搜索的子结点进行剪枝\\ \hline
        \end{tabular}
-\end{table*}
+\end{table*}\\
 % end the environment with {table*}, NOTE not {table}!
+通用五子棋逻辑部分循环地从控制台读取人类玩家的输入、调用AI智能体部分提供的接口获取AI的输入，对他们的输入进行合法性验证后操
+作棋盘下棋、判断游戏是否结束，并控制棋盘的打印、悔棋、存盘、复盘等操作。\\
+AI智能体部分为通用五子棋运行逻辑部分提供一个接口，接受某一时刻的棋盘等游戏状态信息，并返回一个AI此时希望下棋的位置。\\
+此外还有部分开发过程中更好的测试启发式函数的结果或AI决策的结果所用的文件，它们在Release模式下不会被链接进主程序因此下文不
+再叙述。\\
 
 \subsection{\textbf{Minimax搜索和$\alpha-\beta$优化剪枝}}
-We have already seen several typeface changes in this sample.  You
+基本的Minimax搜索方法是用递归函数来实现的，在我们的程序中对应于searchmove.cpp的SearchStep函数。\\
+AI智能体部分对外提供一个接口SearchMove()，它返回一个Point结构体。Point结构体的定义如下：
+\begin{quote}
+       struct Point \{\\
+       \hspace*{0.6cm} int x;\\
+       \hspace*{0.6cm} int y;\\
+       \}
+\end{quote}
+SearchMove()函数没有形参，但是会读取define.h中定义的游戏棋盘、当前玩家、游戏历史记录等数据，组合成GameFullStatus类的对象，
+并将其的引用传递给SearchStep函数，由此开始对状态树的根节点（即当前局面）的搜索。相关定义如下：
+\begin{quote}
+       struct LegalMove \{\\
+       \hspace*{0.6cm} //表示当前局面下当前的玩家的一个合法的下棋行动，包括下棋的位置和这个位置的优先级\\
+       \hspace*{0.6cm} Point p;\\
+       \hspace*{0.6cm} int priority = 0;//这个位置点对应的优先级，越低则越应当被首先搜索。
+       \};\\
+       \\
+       class GameFullStatus \{\\
+       public:
+       \hspace*{0.6cm} int player; // 当前要行动的玩家编号\\
+       \hspace*{0.6cm} int (*board)[GRID_NUM]; // 当前棋盘\\
+       \hspace*{0.6cm} vector<pair<int, Point>> playHistory;//下棋的历史记录\\
+       \hspace*{0.6cm} unsigned long long zobrist;\\
+       \\
+       \hspace*{0.6cm}inline bool putChess(const LegalMove &move);\\
+       \hspace*{0.6cm}inline bool unputChess(const LegalMove &move);\\
+       \};
+\end{quote}
+\qquad MinimaxWe ha \qquad ve alrea \qquad dy seen several typeface changes in this sample.  You
 can indicate italicized words or phrases in your text with
 the command \texttt{{\char'134}textit}; emboldening with the
 command \texttt{{\char'134}textbf}
