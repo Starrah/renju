@@ -37,9 +37,10 @@
 \usepackage{fontspec,xunicode}
 \usepackage{CTEX}
 %\defaultfontfeatures{Mapping=tex-text} %如果没有它，会有一些 tex 特殊字符无法正常使用，比如连字符。
+
 \usepackage{algorithm}
-\usepackage{algorithmicx}
 \usepackage{algpseudocode}
+\usepackage{bm}
 
 \floatname{algorithm}{算法}
 \renewcommand{\algorithmicrequire}{\textbf{输入:}}
@@ -199,33 +200,57 @@ AI智能体部分为通用五子棋运行逻辑部分提供一个接口，接受
 
 \subsection{\textbf{Minimax搜索和$\alpha-\beta$优化剪枝}}
 基本的Minimax搜索方法是用递归函数来实现的，在我们的程序中对应于searchmove.cpp的SearchStep函数。\\
-AI智能体部分对外提供一个接口SearchMove()，它返回一个Point结构体。Point结构体的定义如下：
-\begin{quote}
-       struct Point \{\\
-       \hspace*{0.6cm} int x;\\
-       \hspace*{0.6cm} int y;\\
-       \}
-\end{quote}
+AI智能体部分对外提供一个接口SearchMove()，它返回一个Point结构体，其中包括x、y两个int类型的数据，代表一个点的坐标。\\
 SearchMove()函数没有形参，但是会读取define.h中定义的游戏棋盘、当前玩家、游戏历史记录等数据，组合成GameFullStatus类的对象，
-并将其的引用传递给SearchStep函数，由此开始对状态树的根节点（即当前局面）的搜索。相关定义如下：
-\begin{quote}
-       struct LegalMove \{\\
-       \hspace*{0.6cm} //表示当前局面下当前的玩家的一个合法的下棋行动，包括下棋的位置和这个位置的优先级\\
-       \hspace*{0.6cm} Point p;\\
-       \hspace*{0.6cm} int priority = 0;//这个位置点对应的优先级，越低则越应当被首先搜索。
-       \};\\
-       \\
-       class GameFullStatus \{\\
-       public:
-       \hspace*{0.6cm} int player; // 当前要行动的玩家编号\\
-       \hspace*{0.6cm} int (*board)[GRID_NUM]; // 当前棋盘\\
-       \hspace*{0.6cm} vector<pair<int, Point>> playHistory;//下棋的历史记录\\
-       \hspace*{0.6cm} unsigned long long zobrist;\\
-       \\
-       \hspace*{0.6cm}inline bool putChess(const LegalMove &move);\\
-       \hspace*{0.6cm}inline bool unputChess(const LegalMove &move);\\
-       \};
-\end{quote}
+并将其的引用传递给SearchStep函数，由此开始对状态树的根节点（即当前局面）的搜索。\\
+SearchStep函数则表示对一个结点的完整搜索过程，其内部主要的内容包括产生合法行动的有序列表，用循环遍历这个列表、依次执行每
+个行动产生子状态，递归调用SearchStep搜索子状态结点，最后返回所有子状态的结果中预估效用最大（对于当前行动玩家是AI的搜索结
+点）或最小（对于当前行动玩家是人类的搜索结点）的一个，其对应的行动作为搜索结果返回给上层。
+
+伪代码描述如算法1所述。\\
+\begin{algorithm}
+       \caption{搜索单个状态结点}
+       \begin{algorithmic}[1] %每行显示行号
+              \Require 当前完整状态$status$（包括棋盘$status.board$、当前行动玩家$status.player$等）、当前剩余深度$depth$
+              、上层$\alpha$、上层$\beta$
+              \Ensure 搜索结果$result$（包括评估分数$result.score$、对应哪个合法动作$result.move$）
+              \Function {SearchStep}{$status, depth, \alpha, \beta$}
+              \If {$depth == 0$}
+              \State 调用启发函数评估分值$result.score = $\Call{evaluate}{$status$}
+              \State \Return{$result.score$}
+              \EndIf
+              \State 产生所有合法行动的有序列表$legalMoves = $\Call{makemoves}{$status$}
+              \If{$status.player ==\ $black}
+                     \State $result.score = -\infty$
+                     \ForAll {$legalmove$ in $legalmoves$}
+                            \State $status.$\Call{putChess}{$legalmove$}
+                            \State $curRes = $ \Call{SearchStep}{$status, depth - 1, \alpha, \beta$}
+                            \State $status.$\Call{unputChess}{$legalmove$}
+                            \If {$curRes.score > result.score$}
+                                   \State $result = curRes$
+                                   \State $\alpha = $ \Call{max}{$\alpha, result.score$}
+                            \EndIf
+                            \State \textbf{if}\ {$result.score >= \beta$} \ \textbf{then}\ \textbf{break}
+                     \EndFor
+              \EndIf
+              \If{$status.player ==\ $white}
+                     \State $result.score = +\infty$
+                     \ForAll {$legalmove$ in $legalmoves$}
+                            \State $status.$\Call{putChess}{$legalmove$}
+                            \State $curRes = $ \Call{SearchStep}{$status, depth - 1, \alpha, \beta$}
+                            \State $status.$\Call{unputChess}{$legalmove$}
+                            \If {$curRes.score < result.score$}
+                                   \State $result = curRes$
+                                   \State $\beta = $ \Call{min}{$\beta, result.score$}
+                            \EndIf
+                            \State \textbf{if}\ {$result.score >= \beta$} \ \textbf{then}\ \textbf{break}
+                     \EndFor
+              \EndIf
+              \State \Return{$result$}
+              \EndFunction
+       \end{algorithmic}
+\end{algorithm}
+
 \qquad MinimaxWe ha \qquad ve alrea \qquad dy seen several typeface changes in this sample.  You
 can indicate italicized words or phrases in your text with
 the command \texttt{{\char'134}textit}; emboldening with the
