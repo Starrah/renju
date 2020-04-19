@@ -237,7 +237,7 @@ SearchStep函数则表示对一个结点的完整搜索过程，其内部主要�
                             \State 计算到$historyPoints$的距离的最小值$place.priority =\ $\Call{minDistanceTo}{historyPoints}
                      \EndFor
                      \State 按priority排序所有空位置$result =\ $\Call{SortByPriority}{$emptyPlaces$}
-                     \Return {$result$}
+                     \State \Return {$result$}
               \EndFunction
        \end{algorithmic}
 \end{algorithm}
