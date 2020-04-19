@@ -19,18 +19,18 @@ vector<string> input{
         "000000000000000" +
         "000000000000000" +
         "000000000000000" +
-        "000000000000000" +
         "000000020000000" +
-        "000010001000000" +
-        "000002022100000" +
-        "000000201000000" +
-        "000001020000000" +
+        "000002221000000" +
+        "000000000100000" +
+        "000000011000000" +
+        "000000010000000" +
         "000000000000000" +
         "000000000000000" +
         "000000000000000" +
         "000000000000000" +
         "000000000000000" +
-        "2",
+        "000000000000000" +
+        "1",
 
 //            string() +
 //            "000000000000000" +
@@ -110,12 +110,15 @@ void DebugEvaluate() {
 }
 
 void DebugSearchMove() {
-#if defined(_DEBUG) || defined (DEBUG_EVALUATE_ENABLE)
+#if defined(_DEBUG) && defined (DEBUG_EVALUATE_ENABLE)
     for (const string &one: input) {
+        initializeGame();
         _convertInput(chessBoard, one);
         currentPlayer = oppositePlayer(one[15 * 15] - '0');
         history.clear();
-        searchMove();
+        auto pres = searchMove();
+        cout << "(" << pres.x << "," << pres.y << ")" << "  ";
+        cout << DebugAIOutputString<<endl;
     }
 #endif
 }

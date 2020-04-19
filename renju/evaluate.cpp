@@ -366,7 +366,8 @@ int getScore(const int board[GRID_NUM][GRID_NUM],int mine_count[],int oppo_count
 		int newBoard[GRID_NUM][GRID_NUM];
 		memcpy(newBoard, board, sizeof(int) * GRID_NUM * GRID_NUM);
 		newBoard[point.x][point.y] = 0;
-		return evaluate(newBoard, oppositePlayer(player), newHistory);
+		int newScore = evaluate(newBoard, oppositePlayer(player), newHistory);
+		return player == black? newScore: (-newScore);
 	}
 	if (mine_count[Five] > 0&&oppo_count[Five]==0)
 	{
