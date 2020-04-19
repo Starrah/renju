@@ -102,74 +102,86 @@
 
 \begin{abstract}
 基于Minimax搜索和$\alpha$-$\beta$优化剪枝的方法，我们编写了一个可进行人机对弈的AI程序。程序从当前状态开始，
-依次考虑双方每一种可能动作及其引起的结果状态，对由此产生的状态树进行深度优先的搜索。在搜索过程中，叶子结点使用启发式方法对
-当前状态进行估值，而其他的结点中，如果是属于AI行棋的则返回所有子节点搜索结果的最大值，否则如果是属于对手（人）行棋的则返回
-最小值。此外，上层结点在搜索过程中会向其的下层结点传入其已经找到的最优方案的值，如果下层结点在搜索过程中发现自身返回的结果
-已经不可能被上层结点采纳为最好方案，则应剪除剩余分支、提前结束搜索，从而达到减小计算量的目的。\\
-除此之外，我们还使用了散列记录搜索过程中找到的结点的搜索结果，以便之后的搜索查表使用、避免重复搜索相同局面；
-使用迭代深度搜索方法以充分利用有限的时间完成尽可能多的搜索，并让浅层的搜索结果为高层的搜索提供子节点搜索顺序的参考。
-根据五子棋的一般规律和特点，我们还引入了一种特别的剪枝方法：通过剪除对距离棋盘上任何现有棋子距离都很远的空位置的搜索
-（这样的位置往往是不会得到很大的收益的），从而进一步降低每个搜索结点的平均分枝数，以加快搜索效率、加深在有限时间内可以搜索
-到的层数。
-最后，我们在现有框架的基础上加入了悔棋和复盘的功能，并丰富了游戏内的提示文字、对所有输入进行正确性检查和合理的报错提示，以
-增强人类玩家使用本程序的体验。\\
-经过我们的反复调试和优化，在实验环境下，程序可以在$5s$内搜索平均$2.5\times10^6$个结点，对状态树完整地完成$4-6$层的搜索，
-能够搜索到效用很高的结果。程序在与人类的实际对战中也取得了良好的效果，有时可以提前6-10回合就找到策略，通过连续的形成活三、
-冲四 让对手不得不根据自己的节奏下棋，最终形成双三、三四、双四等胜利结果。
+依次考虑双方每一种可能动作及其引起的结果状态，对由此产生的状态树进行深度优先的搜索，并使用启发式方法对状态进行估值，和适当
+的剪除不必要搜索的分支，从而减小计算量和提高效率。\\
+除此之外，我们还使用了散列记录搜索过程中找到的结点的搜索结果，以避免重复搜索相同局面；使用迭代深度搜索方法以充分利用有限的
+时间完成尽可能多的搜索，并让浅层的搜索结果为高层的搜索提供子节点搜索顺序的参考。
+根据五子棋的特点，我们还引入了一种特别的搜索顺序和剪枝方法，优先搜索距离前几步下棋位置近的结点、剪除距离任何现有棋子都很远
+的结点，以进一步降低搜索树的平均分支数，加快搜索效率、加深在有限时间内可以搜索到的层数。
+最后，我们在现有框架的基础上加入了悔棋和复盘的功能，丰富了游戏的提示文字、完善了输入检查，以增强人类玩家使用本程序的体验。\\
+在实验环境下，我们的程序可以在$5s$内搜索平均$2.5\times10^6$个结点，对状态树完整地完成$4-6$层的搜索。程序在与人类的实际对战中
+也取得了良好的效果，有时可以提前6-10回合就找到制胜的策略。\\
+       \\
+       \\
 \end{abstract}
 
-\section{Introduction}
-The \textit{proceedings} are the records of a conference.
-ACM seeks to give these conference by-products a uniform,
-high-quality appearance.  To do this, ACM has some rigid
-requirements for the format of the proceedings documents: there
-is a specified format (balanced  double columns), a specified
-set of fonts (Arial or Helvetica and Times Roman) in
-certain specified sizes (for instance, 9 point for body copy),
-a specified live area (18 $\times$ 23.5 cm [7" $\times$ 9.25"]) centered on
-the page, specified size of margins (2.54cm [1"] top and
-bottom and 1.9cm [.75"] left and right; specified column width
-(8.45cm [3.33"]) and gutter size (.083cm [.33"]).
+\section{\textbf{概述}}
+博弈在人类社会中广泛存在，小到人与人之间的棋牌类游戏，大到整个金融、资本和贸易市场的运行，都存在着各种各样的博弈问题。
+博弈问题也是现代人工智能研究的重点问题之一，经过长期的发展，人们已经研究出了许多种有利于解决博弈问题的算法，其中重要的一种
+就是对抗搜索。\\
+经典的对抗搜索适用于完全可观测的、确定性的、离散性的博弈问题，通过把问题建模成多个参与方共同进行动作影响游戏状态，并最终产
+生一个结果的模型，把问题的每个状态和状态之间的可转移关系建模为状态树来模拟真实世界的博弈过程，通过从初始状态开始按一定的策
+略来搜索状态树以在有限的计算资源下寻求对自己最有利的方案。\\
+一种常用的对抗搜索方法是Minimax搜索，即通过交替模拟双方可以采取的可行动作，在决定己方动作时总是选择所有动作中带来效用（或启发
+式函数产生的预估效用）最大的一个，在预测对方动作时总是选择所有动作中带来效用最大的一个，这样不仅符合对抗博弈问题的基本逻辑，
+而且使得智能体能够正确评估预测自己的行为在一定时期之后能产生的结果，避免贪心搜索带来的过分陷入局部最优的问题。
+另外重要的一点是，由于Minimax搜索中上层结点的结果总是取决于下层结点的结果的最大值或最小值，因此我们可以采用一种名为
+$\alpha-\beta$优化剪枝的方法，当下层结点发现自己返回最终的结果已经不可能成为上层结点的最值、被上层结点选用时，就提前结束
+本层的搜索。这样可以大大的降低Minimax方法嗖嗖的分支数，提高搜索的效率。\\
+由于五子棋的每一个状态结点下，对当前行动的一方而言在任何一个空位置下棋都是合法的行动，五子棋问题的搜索树的平均分支数量极高，
+可以达到近200，而游戏结束往往需要30-60轮行动，因而即使使用了各种剪枝方法也几乎不可能一次性搜索到最终游戏结束对应的结点状态，
+因此基于启发函数评估局面的限定深度搜索是必须的。根据五子棋的特点，我们使用了一套启发式评估方法，它评估双方在场上拥有的活二、
+活三、冲三、活四、冲四等棋型的数量，并以此为依据对局面做出预估。\\
+$\alpha-\beta$搜索的特点决定了其剪枝的效果受搜索结点的先后顺序的影响十分严重。对每一结点的的搜索过程，其需要循环搜索自己的
+各个所有子节点、计算子节点的结果；这一过程中足够好的子结点越是先被搜索出来，则搜索自己的余下子节点的过程就能够得到更好的剪
+枝，$\alpha-\beta$优化剪枝就能发挥更好的作用。因此决定循环搜索子结点的顺序就成为了十分重要的问题。\\
+由于考虑到在实际问题中智能体做出决策的时间往往是受限的，我们利用迭代深度搜索的方法，通过限定实际搜索所用的时间、不
+固定搜索进行的层数，让搜索进行的层数随着搜索的过程不断迭代增加，从而使智能体可以最大限度的利用所给的时间进行尽可能深入的搜
+索、找到尽可能好的答案；利用散列表优化的方法，通过在搜索过程中把在某一结点上得到的结果存储进散列表中，使得后面的搜索过程不
+必重复搜索之前已经搜索过的状态。但更重要的是这两种方法的结合使用使得我们在进行更深层的搜索时，能够根据对这个状态结点之前进
+行浅层搜索时找到的最佳结果的记忆，优先搜索这个结点。因为在进行深层搜索时找到的最佳结果在搜索树上的路径，有很大可能是仍然沿
+着之前浅层搜索时找到的最佳路径的，这样就达到了让最好的子结点更可能被最先搜索出来的目的，从而优化了$\alpha-\beta$优化剪枝的
+效果。\\
+除此之外，根据五子棋的特点，我们还引入了一种特别的搜索顺序决定方法和优化剪枝方法：在决定搜索顺序时按照某一空位置距离前几个
+回合下棋的位置的距离排序、尽量让距离前几个回合下棋位置近的节点被优先的搜索，和剪除对距离棋盘上任何棋子距离都较远的位置的搜
+索，我们可以进一步的优化搜索顺序，和在不明显损伤智能体强度的情况下降低搜索树平均分支数量，从而达到提高搜索效率、加深搜索层
+数的目的。\\
+我们的程序基于给定的五子棋框架开发，实现了输入输出、落子合法性判断、胜负判断等人机对弈程序所需要的基本功能，并额外实现了悔
+棋、复盘等附加功能，丰富了游戏内的文字提示和对用户的输入进行完善的合法性检查，以给人类玩家使用本程序带来更好的体验。\\
 
-The good news is, with only a handful of manual
-settings\footnote{Two of these, the {\texttt{\char'134 numberofauthors}}
-and {\texttt{\char'134 alignauthor}} commands, you have
-already used; another, {\texttt{\char'134 balancecolumns}}, will
-be used in your very last run of \LaTeX\ to ensure
-balanced column heights on the last page.}, the \LaTeX\ document
-class file handles all of this for you.
+我们的方法主要有以下几个部分：
+\begin{enumerate}
+       \item Minimax搜索和$\alpha-\beta$优化剪枝
+       \item 评估局面的启发式函数的设计与实现
+       \item 散列表优化和迭代深度搜索
+\end{enumerate}
 
-The remainder of this document is concerned with showing, in
-the context of an ``actual'' document, the \LaTeX\ commands
-specifically available for denoting the structure of a
-proceedings paper, rather than with giving rigorous descriptions
-or explanations of such commands.
+\\一般的下棋经验告诉我们，在大多数情况下，效用高的下棋位置要么是
+进攻的，即延长自己已经有的连珠，使其接近五连珠；要么是防守的，即破坏、截断对手的连珠，避免其在未来成为五连珠。无论哪种情况
+，我们都往往应该在自己现有的棋子周边或对方现有的棋子周边下棋，而一般不会在距离任何现有棋子都很远的位置下棋；在概率意义上，的通过剪除对距离棋盘上任何现有棋子距离都很远的空位置的搜索
+（这样的位置往往是不会得到很大的收益的），从而进一步降低每个搜索结点的平均分枝数，以加快搜索效率、加深在有限时间内可以搜索到的层数。
 
-\section{The {\secit Body} of The Paper}
-Typically, the body of a paper is organized
-into a hierarchical structure, with numbered or unnumbered
-headings for sections, subsections, sub-subsections, and even
-smaller sections.  The command \texttt{{\char'134}section} that
-precedes this paragraph is part of such a
-hierarchy.\footnote{This is the second footnote.  It
-starts a series of three footnotes that add nothing
-informational, but just give an idea of how footnotes work
-and look. It is a wordy one, just so you see
-how a longish one plays out.} \LaTeX\ handles the numbering
-and placement of these headings for you, when you use
-the appropriate heading commands around the titles
-of the headings.  If you want a sub-subsection or
-smaller part to be unnumbered in your output, simply append an
-asterisk to the command name.  Examples of both
-numbered and unnumbered headings will appear throughout the
-balance of this sample document.
+\section{\textbf{方法}}
 
-Because the entire article is contained in
-the \textbf{document} environment, you can indicate the
-start of a new paragraph with a blank line in your
-input file; that is why this sentence forms a separate paragraph.
+\subsection{\textbf{程序基本框架}}
+总体上程序可以分为两个部分：通用五子棋运行逻辑部分和AI智能体部分。详细的文件模块介绍如表1所示。\\
+通用五子棋逻辑部分循环地从控制台读取人类玩家的输入、调用AI智能体部分提供的接口获取AI的输入，对他们的输入进行合法性验证后操
+作棋盘下棋、判断游戏是否结束，并控制棋盘的打印、悔棋、存盘、复盘等操作。\\
+AI智能体部分为通用五子棋运行逻辑部分提供一个接口，接受某一时刻的棋盘等游戏状态信息，并返回一个AI此时希望下棋的位置。\\
+\begin{table*}
+       \centering
+       \caption{文件模块一览表}
+       \begin{tabular}{|c|c|l|} \hline
+       所属部分 & 文件名（不含扩展名） & 说明\\ \hline
+       运行逻辑 & start & 游戏主循环所在地，控制复盘、存盘、读取人类和AI的动作输入、打印棋盘等\\ \hline
+       运行逻辑 & makemove & 在棋盘上指定位置下棋或撤销最近一步下棋，更新游戏状态\\ \hline
+       \texttt{{\char'134}table}& 300 & For tables\\ \hline
+       \texttt{{\char'134}table*}& 400& For wider tables\\ \hline
+       \end{tabular}
+\end{table*}
+% end the environment with {table*}, NOTE not {table}!
 
-\subsection{Type Changes and {\subsecit Special} Characters}
+\subsection{\textbf{Minimax搜索和$\alpha-\beta$优化剪枝}}
 We have already seen several typeface changes in this sample.  You
 can indicate italicized words or phrases in your text with
 the command \texttt{{\char'134}textit}; emboldening with the
