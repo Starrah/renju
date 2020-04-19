@@ -1,35 +1,48 @@
 \begin{thebibliography}{1}
 
-\bibitem{bowman:reasoning}
-M.~Bowman, S.~K. Debray, and L.~L. Peterson.
-\newblock Reasoning about naming systems.
-\newblock {\em ACM Trans. Program. Lang. Syst.}, 15(5):795--825, November 1993.
+\bibitem{cnblogs2}
+marble xu.
+\newblock Python 五子棋ai实现(2):棋型评估函数实现.
+\newblock [EB/OL].
+\newblock \url{https://blog.csdn.net/marble_xu/article/details/90450436}
+  Accessed April 10, 2020.
 
-\bibitem{braams:babel}
-J.~Braams.
-\newblock Babel, a multilingual style-option system for use with latex's
-  standard document styles.
-\newblock {\em TUGboat}, 12(2):291--301, June 1991.
+\bibitem{cnblogs1}
+maxuewei2.
+\newblock 五子棋估值算法.
+\newblock [EB/OL].
+\newblock \url{https://www.cnblogs.com/maxuewei2/p/4825520.html} Accessed April
+  10, 2020.
 
-\bibitem{clark:pct}
-M.~Clark.
-\newblock Post congress tristesse.
-\newblock In {\em TeX90 Conference Proceedings}, pages 84--89. TeX Users Group,
-  March 1991.
+\bibitem{xqbase2}
+B.~Moreland.
+\newblock 《对弈程序基本技术》专题 zobrist键值.
+\newblock [EB/OL].
+\newblock \url{http://www.xqbase.com/computer/struct_zobrist.htm} Accessed
+  April 10, 2020.
 
-\bibitem{herlihy:methodology}
-M.~Herlihy.
-\newblock A methodology for implementing highly concurrent data objects.
-\newblock {\em ACM Trans. Program. Lang. Syst.}, 15(5):745--770, November 1993.
+\bibitem{xqbase1}
+B.~Moreland.
+\newblock 《对弈程序基本技术》专题 置换表.
+\newblock [EB/OL].
+\newblock \url{http://www.xqbase.com/computer/search_hashing.htm} Accessed
+  April 10, 2020.
 
-\bibitem{Lamport:LaTeX}
-L.~Lamport.
-\newblock {\em LaTeX User's Guide and Document Reference Manual}.
-\newblock Addison-Wesley Publishing Company, Reading, Massachusetts, 1986.
+\bibitem{xqbase3}
+B.~Moreland.
+\newblock 《对弈程序基本技术》专题 迭代加深.
+\newblock [EB/OL].
+\newblock \url{http://www.xqbase.com/computer/search_iterative.htm} Accessed
+  April 10, 2020.
 
-\bibitem{salas:calculus}
-S.~Salas and E.~Hille.
-\newblock {\em Calculus: One and Several Variable}.
-\newblock John Wiley and Sons, New York, 1978.
+\bibitem{张明亮2012五子棋机器博弈系统评估函数的设计}
+张明亮, 吴俊, 李凡长, et~al.
+\newblock 五子棋机器博弈系统评估函数的设计.
+\newblock {\em 计算机应用}, 32(07):1969--1972, 2012.
+
+\bibitem{裴博文2008五子棋人工智能权重估值算法}
+裴博文.
+\newblock 五子棋人工智能权重估值算法.
+\newblock {\em 电脑编程技巧与维护}, (6):69--75, 2008.
 
 \end{thebibliography}
