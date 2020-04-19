@@ -368,7 +368,7 @@ min_{a\in Actions(s)}HMinmax(Result(s,a),d+1), & player(s)=MIN.
 \subsection{\textbf{棋型统计策略}}
 对棋子进行遍历，棋子有可能在四个方向（）从左到右，从上到小，从左上到右下，从右上到左下）上形成基本棋型，对四个方向进行搜索，每个方向取以该棋子为中心的9个位置，得到位置数组，对这个数组进行棋型搜索，即可得到该棋子形成的所有棋型数目。\\
 需要注意的是，为了防止棋型的重复计入，我们需要记录已经被标记过的棋盘位置，下一次遍历到此位置时便不再查找此棋子附近形成的棋型。\\
-伪代码如下：\\
+伪代码如算法3：\\
 \begin{tiny}
 \begin{algorithm}
        \algsetup{\tiny}
@@ -421,17 +421,53 @@ min_{a\in Actions(s)}HMinmax(Result(s,a),d+1), & player(s)=MIN.
      黑活二     &  40\\ \hline
 	\end{tabular}
 \end{table}
-\section{其他}
-\subsection{游戏结束的判断}
+
+\section{\textbf{其他}}
+\subsection{\textbf{游戏结束的判断（GameOver模块）}}
 在每一次下棋后，立刻在八个方向、距离为4的范围内查找与刚刚被下的棋子连续的同一方棋子的个数，从而计算出是否有五连珠。由于
 每一回合下棋后都会进行这一判断，因此这一方法足以准确判断出游戏是否结束的结果。另外，若棋盘下满无人胜利，则判断为和棋。
-\subsection{悔棋}
+\subsection{\textbf{悔棋}}
 维护一个下棋历史数组。悔棋时，撤销最后下的两手棋，数组弹出元素，更新棋盘。\\
-\subsection{复盘}
+\subsection{\textbf{复盘}}
 将复盘的下棋历史存储在同目录的ChessSave.txt下，每次棋局结束时，提示是否要存盘，若存盘则将下棋历史存储在ChessSave.txt中，
 每次棋局开始时，提示是否要复盘，若需要复盘则播放ChessSave.txt中的历史记录。\\
 
-\section{实验}
+\section{\textbf{实验}}
+衡量基于对抗搜索的算法的优劣的重要标准，就是在规定时间内算法完成搜索的层数，因为更多的搜索层数往往意味着对更远的未来形势的预测，
+往往在实际的人机对弈中有着更好的效果。\\
+在实验环境：Intel Core i7-7500U 2.90GHz，Windows 10 64bit，GCC 8.1.0 64位Release编译的实验条件下，我们调整程序中各个模块
+的开关，测试其在5s内完成搜索的完整层数和搜索的结点个数，结果如表4所示。而表4中，模块配置一列各序号的含义如表3所示（注：由于是
+在限定时间下进行统计的，迭代深度搜索在各个实验中均开启，但在不开启散列表的情况下由于无法记忆浅层搜索的结果，迭代深度搜索不会起到优化顺序的作用）。
+\begin{table}
+    \centering
+    \caption{不同模块配置下的程序搜索效率}
+    \begin{tabular}{|c|l|} \hline
+    编号 & 含义\\ \hline
+    0 & Minimax\\ \hline
+    1 & $\alpha-\beta$剪枝\\ \hline
+    2 & 散列表\\ \hline
+    3 & 基于距离的搜索顺序优化\\ \hline
+    4 & 基于距离的空位置剪枝\\ \hline
+    \end{tabular}
+\end{table}
+
+\begin{table}
+    \centering
+    \caption{不同模块配置下的程序搜索效率}
+    \begin{tabular}{|l|c|c|c|} \hline
+    模块配置 & 完整搜索层数 & 5s内搜索 & 与笔者对战\\ \hline
+    0 & define & 定义各类基础的游戏数据结构如棋盘、点、行棋记录、启发式估值等\\ \hline
+    0+1 & start & 游戏主循环，控制复盘、存盘、读取人类和AI的动作输入、打印棋盘等\\ \hline
+    0+1+2 & makemove & 解析控制台输入，获取AI输入，验证合法性，进行下棋，撤销下棋\\ \hline
+    0+1+3 & gameover & 判断游戏是否结束和胜负\\ \hline
+    0+1+2+3 & prinMinimax+$\alpha-\beta$剪枝tchessboard & 把棋盘打印在控制台上\\ \hline
+    0+1+3+4 & prinMinimax+$\alpha-\beta$剪枝tchessboard & 把棋盘打印在控制台上\\ \hline
+    0+1+2+3+4 & evaluate & 对一个完整游戏状态进行局面估值\\ \hline
+    Minimax+$\alpha-\beta$剪枝+基于距离顺序优化+散列表+迭代深度顺序优化 & createmoves & 产生所有的可行动作和循环遍历时的先后顺序构成的有序列表\\ \hline
+    Minimax+$\alpha-\beta$剪枝+基于距离顺序优化+散列表+迭代深度顺序优化+距离剪枝 & searchmove & 对局面进行递归的、迭代深度的Minimax搜索和$\alpha-\beta$优化剪枝\\ \hline
+    \end{tabular}
+\end{table}
+
 
 %ACKNOWLEDGMENTS are optional
 \section{Acknowledgments}
