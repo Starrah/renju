@@ -192,6 +192,7 @@ int root_depth;
 clock_t startClock;
 
 #define FORCE_PRINT_AI_DEBUG_OUTPUT
+#define PRINT_FULL_BEST_PATH
 
 Point searchMove() //搜索函数主体
 {
@@ -236,6 +237,11 @@ Point searchMove() //搜索函数主体
     optss << "当前估值" << currentEva << ", " << "搜索最大层数" << root_depth << ", "
           << "总时间" << nowToStartMsec() << "ms, " << "总步数" << searchStepTotalCounter << ", "
           << "评估分数" << finalRes.evaScore << ", " << endl;
+#if defined(_DEBUG) && defined(DEBUG_RECORD_ALL_SEARCH_STEP) && defined(PRINT_FULL_BEST_PATH)
+    for (auto qwq: finalRes.hh) {
+        optss << get<1>(qwq).p.x << get<1>(qwq).p.y << " ";
+    }
+#endif
     DebugAIOutputString = optss.str();
 #endif
     return finalRes.move.p;
