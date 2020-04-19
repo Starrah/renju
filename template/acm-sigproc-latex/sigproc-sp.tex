@@ -41,7 +41,7 @@
 \usepackage{CTEX}
 %\defaultfontfeatures{Mapping=tex-text} %如果没有它，会有一些 tex 特殊字符无法正常使用，比如连字符。
 
-\usepackage{algorithm}
+\usepackage{algorithmicx,algorithm}
 \usepackage{algpseudocode}
 \usepackage{bm}
 \usepackage{graphicx}
@@ -460,16 +460,14 @@ min_{a\in Actions(s)}HMinmax(Result(s,a),d+1), & player(s)=MIN.
 此外对最终版本（0+1+2+3+4），我们还邀请了多名亲友与之对战，合计大约30局左右，人类无一胜绩。这表明我们的AI在五子棋方面已经有了
 一定的与人对战的能力。
 
+\section{实验收获与体会}
+在设计和实现人机对弈五子棋AI的过程中，我们对Minimax搜索、$\alpha-\beta$优化剪枝、启发式函数、迭代深度搜索有了更加全面和深入的了解。\\
+在早期粗略的设计实现后，AI其实已经可以实现基本的对弈功能了，但它的下棋总会非常的奇怪：不去堵对方的成三、下的位置常常让人摸不着头脑。于是我们不断的去优化它——加入了优化剪枝、迭代深度搜索让它能够搜索的步数更多，修改启发函数让它能在较小的时间内能够做出较优的判断，也实验了一种优化方法——舍弃掉““荒郊野岭”即距离棋子较远的位置，想法是在交战中心作战是更有效率的方法，实验之后，效率得到了相当大的优化。\\
+在设计的过程中，我们认识到了对抗搜索方法的优越性，也体会到了先验知识的重要性，启发式函数、结合游戏实际的优化策略往往能够使决策变得更高效。\\
+五子棋与其他棋类游戏如围棋相比，是相对简单的，与生活实际中的很多决策情境相比更是不值一提，人工智能如何能够在更复杂的情境下更高效的完成任务呢？我想我们还要继续学习。\\
+最后非常感谢老师和助教的指导！\\
 
 %ACKNOWLEDGMENTS are optional
-\section{Acknowledgments}
-This section is optional; it is a location for you
-to acknowledge grants, funding, editing assistance and
-what have you.  In the present case, for example, the
-authors would like to thank Gerald Murray of ACM for
-his help in codifying this \textit{Author's Guide}
-and the \textbf{.cls} and \textbf{.tex} files that it describes.
-
 %
 % The following two commands are all you need in the
 % initial runs of your .tex file to
@@ -483,56 +481,5 @@ and the \textbf{.cls} and \textbf{.tex} files that it describes.
 \cite{xqbase1}
 \cite{xqbase2}
 \cite{xqbase3}
-  % sigproc.bib is the name of the Bibliography in this case
-% You must have a proper ".bib" file
-%  and remember to run:
-% latex bibtex latex latex
-% to resolve all references
-%
-% ACM needs 'a single self-contained file'!
-%
-%APPENDICES are optional
-%\balancecolumns
-\appendix
-%Appendix A
-\section{Headings in Appendices}
-The rules about hierarchical headings discussed above for
-the body of the article are different in the appendices.
-In the \textbf{appendix} environment, the command
-\textbf{section} is used to
-indicate the start of each Appendix, with alphabetic order
-designation (i.e. the first is A, the second B, etc.) and
-a title (if you include one).  So, if you need
-hierarchical structure
-\textit{within} an Appendix, start with \textbf{subsection} as the
-highest level. Here is an outline of the body of this
-document in Appendix-appropriate form:
-\subsection{Introduction}
-\subsection{The Body of the Paper}
-\subsubsection{Type Changes and  Special Characters}
-\subsubsection{Math Equations}
-\paragraph{Inline (In-text) Equations}
-\paragraph{Display Equations}
-\subsubsection{Citations}
-\subsubsection{Tables}
-\subsubsection{Figures}
-\subsubsection{Theorem-like Constructs}
-\subsubsection*{A Caveat for the \TeX\ Expert}
-\subsection{Conclusions}
-\subsection{Acknowledgments}
-\subsection{Additional Authors}
-This section is inserted by \LaTeX; you do not insert it.
-You just add the names and information in the
-\texttt{{\char'134}additionalauthors} command at the start
-of the document.
-\subsection{References}
-% This next section command marks the start of
-% Appendix B, and does not continue the present hierarchy
-\section{More Help for the Hardy}
-The acm\_proc\_article-sp document class file itself is chock-full of succinct
-and helpful comments.  If you consider yourself a moderately
-experienced to expert user of \LaTeX, you may find reading
-it useful but please remember not to change it.
-\balancecolumns
 % That's all folks!
 \end{document}
