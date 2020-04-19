@@ -192,7 +192,7 @@ int root_depth;
 clock_t startClock;
 
 #define FORCE_PRINT_AI_DEBUG_OUTPUT
-#define PRINT_FULL_BEST_PATH
+//#define PRINT_FULL_BEST_PATH
 
 Point searchMove() //ËÑË÷º¯ÊýÖ÷Ìå
 {

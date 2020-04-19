@@ -42,6 +42,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{bm}
+\usepackage{graphicx}
 
 \floatname{algorithm}{算法}
 \renewcommand{\algorithmicrequire}{\textbf{输入:}}
@@ -121,54 +122,34 @@
 在实验环境下，我们的程序可以在$5s$内搜索平均$2.5\times10^6$个结点，对状态树完整地完成$4-6$层的搜索。程序在与人类的实际对战中
 也取得了良好的效果，有时可以提前6-10回合就找到制胜的策略。\\
        \\
-       \\
 \end{abstract}
 
 \section{\textbf{概述}}
-博弈在人类社会中广泛存在，小到人与人之间的棋牌类游戏，大到整个金融、资本和贸易市场的运行，都存在着各种各样的博弈问题。
-博弈问题也是现代人工智能研究的重点问题之一，经过长期的发展，人们已经研究出了许多种有利于解决博弈问题的算法，其中重要的一种
-就是对抗搜索。\\
-经典的对抗搜索适用于完全可观测的、确定性的、离散性的博弈问题，通过把问题建模成多个参与方共同进行动作影响游戏状态，并最终产
+博弈问题是现代人工智能研究的重点问题之一，经过长期的发展，人们已经研究出了许多种有利于解决博弈问题的算法，其中重要的一种
+就是对抗搜索。经典的对抗搜索适用于完全可观测的、确定性的、离散性的博弈问题，通过把问题建模成多个参与方共同进行动作影响游戏状态，并最终产
 生一个结果的模型，把问题的每个状态和状态之间的可转移关系建模为状态树来模拟真实世界的博弈过程，通过从初始状态开始按一定的策
 略来搜索状态树以在有限的计算资源下寻求对自己最有利的方案。\\
-一种常用的对抗搜索方法是Minimax搜索，即通过交替模拟双方可以采取的可行动作，在决定己方动作时总是选择所有动作中带来效用（或启发
-式函数产生的预估效用）最大的一个，在预测对方动作时总是选择所有动作中带来效用最大的一个，这样不仅符合对抗博弈问题的基本逻辑，
-而且使得智能体能够正确评估预测自己的行为在一定时期之后能产生的结果，避免贪心搜索带来的过分陷入局部最优的问题。
-另外重要的一点是，由于Minimax搜索中上层结点的结果总是取决于下层结点的结果的最大值或最小值，因此我们可以采用一种名为
-$\alpha-\beta$优化剪枝的方法，当下层结点发现自己返回最终的结果已经不可能成为上层结点的最值、被上层结点选用时，就提前结束
-本层的搜索。这样可以大大的降低Minimax方法嗖嗖的分支数，提高搜索的效率。\\
-由于五子棋的每一个状态结点下，对当前行动的一方而言在任何一个空位置下棋都是合法的行动，五子棋问题的搜索树的平均分支数量极高，
-可以达到近200，而游戏结束往往需要30-60轮行动，因而即使使用了各种剪枝方法也几乎不可能一次性搜索到最终游戏结束对应的结点状态，
-因此基于启发函数评估局面的限定深度搜索是必须的。根据五子棋的特点，我们使用了一套启发式评估方法，它评估双方在场上拥有的活二、
+我们使用的常用的对抗搜索方法————Minimax搜索，即交替模拟双方可以采取的最优动作并使用$\alpha-\beta$优化剪枝的方法
+降低搜索的分支数，提高搜索的效率。\\
+由于五子棋在任何一个空位置下棋都是合法的行动，五子棋问题的搜索树的平均分支数量极高，
+可以达到近200，而游戏结束往往需要30-60轮行动，因而不可能一次性搜索到最终游戏结束的结点状态，
+故使用启发函数评估局面的限定深度搜索是必须的。根据五子棋的特点，我们使用了一套启发式评估方法，它评估双方在场上拥有的活二、
 活三、冲三、活四、冲四等棋型的数量，并以此为依据对局面做出预估。\\
-$\alpha-\beta$搜索的特点决定了其剪枝的效果受搜索结点的先后顺序的影响十分严重。对每一结点的的搜索过程，其需要循环搜索自己的
-各个所有子节点、计算子节点的结果；这一过程中足够好的子结点越是先被搜索出来，则搜索自己的余下子节点的过程就能够得到更好的剪
-枝，$\alpha-\beta$优化剪枝就能发挥更好的作用。因此决定循环搜索子结点的顺序就成为了十分重要的问题。\\
-由于考虑到在实际问题中智能体做出决策的时间往往是受限的，我们利用迭代深度搜索的方法，通过限定实际搜索所用的时间、不
-固定搜索进行的层数，让搜索进行的层数随着搜索的过程不断迭代增加，从而使智能体可以最大限度的利用所给的时间进行尽可能深入的搜
-索、找到尽可能好的答案；利用散列表优化的方法，通过在搜索过程中把在某一结点上得到的结果存储进散列表中，使得后面的搜索过程不
-必重复搜索之前已经搜索过的状态。但更重要的是这两种方法的结合使用使得我们在进行更深层的搜索时，能够根据对这个状态结点之前进
-行浅层搜索时找到的最佳结果的记忆，优先搜索这个结点。因为在进行深层搜索时找到的最佳结果在搜索树上的路径，有很大可能是仍然沿
-着之前浅层搜索时找到的最佳路径的，这样就达到了让最好的子结点更可能被最先搜索出来的目的，从而优化了$\alpha-\beta$优化剪枝的
-效果。\\
-除此之外，根据五子棋的特点，我们还引入了一种特别的搜索顺序决定方法和优化剪枝方法：在决定搜索顺序时按照某一空位置距离前几个
-回合下棋的位置的距离排序、尽量让距离前几个回合下棋位置近的节点被优先的搜索，和剪除对距离棋盘上任何棋子距离都较远的位置的搜
-索，我们可以进一步的优化搜索顺序，和在不明显损伤智能体强度的情况下降低搜索树平均分支数量，从而达到提高搜索效率、加深搜索层
-数的目的。\\
+此外考虑到在实际问题中智能体做出决策的时间往往是受限的，我们利用迭代深度搜索的方法，使智能体可以最大限度的利用所给的时间进行尽可能深入的搜
+索、找到尽可能好的答案；利用散列表优化的方法，避免重复搜索已经搜索过的状态。但更重要的是这两种方法的结合使用使得我们在进行更
+深层的搜索时，可以优先搜索之前浅层搜索所找到的最优分支，从而优化了子结点的搜索顺序、提高了$\alpha-\beta$优化剪枝的效果。\\
+根据五子棋的特点，我们还引入了一种特别的搜索顺序决定方法和剪枝方法：在决定搜索顺序时尽量让距离前几个回合下棋位置近的节点被优
+先的搜索，和剪除对距离棋盘上任何棋子距离都较远的位置的搜索，这样可以进一步的提高$\alpha-\beta$优化剪枝的效果和降低搜索树平均
+分支数量，达到提高搜索效率、加深搜索层 数的目的。\\
 我们的程序基于给定的五子棋框架开发，实现了输入输出、落子合法性判断、胜负判断等人机对弈程序所需要的基本功能，并额外实现了悔
 棋、复盘等附加功能，丰富了游戏内的文字提示和对用户的输入进行完善的合法性检查，以给人类玩家使用本程序带来更好的体验。\\
 
-我们的方法主要有以下几个部分：
-\begin{enumerate}
-       \item Minimax搜索和$\alpha-\beta$优化剪枝
-       \item 评估局面的启发式函数的设计与实现
-       \item 散列表优化和迭代深度搜索
-\end{enumerate}
-
-\section{\textbf{方法}}
+\section{\textbf{搜索算法的设计与实现}}
 
 \subsection{\textbf{程序基本框架}}
-总体上程序可以分为两个部分：通用五子棋运行逻辑部分和AI智能体部分。详细的文件模块介绍如表1所示。\\
+总体上程序可以分为两个部分：通用五子棋运行逻辑部分和AI智能体部分，前者负责从控制台读取人类玩家的输入、调用AI智能体部分提供的接
+口获取AI的输入，合法性验证、判断游戏是否结束，和控制棋盘的打印、悔棋、存盘、复盘等；后者则为通用五子棋运行逻辑部分提供一个接口，
+接受某一时刻的棋盘等游戏状态信息，并返回一个AI此时希望下棋的位置。详细的文件模块介绍如表1所示。\\
 \begin{table*}
        \centering
        \caption{文件模块一览表}
@@ -186,28 +167,14 @@ $\alpha-\beta$搜索的特点决定了其剪枝的效果受搜索结点的先后
        AI & cutoffTest & 判定是否停止搜索子节点、调用启发式函数对局面进行估值\\ \hline
        AI & stopSearchSiblingsTest & 判定是否因$\alpha-\beta$或超时等，对未搜索的子结点进行剪枝\\ \hline
        \end{tabular}
-\end{table*}\\
-% end the environment with {table*}, NOTE not {table}!
-通用五子棋逻辑部分循环地从控制台读取人类玩家的输入、调用AI智能体部分提供的接口获取AI的输入，对他们的输入进行合法性验证后操
-作棋盘下棋、判断游戏是否结束，并控制棋盘的打印、悔棋、存盘、复盘等操作。\\
-AI智能体部分为通用五子棋运行逻辑部分提供一个接口，接受某一时刻的棋盘等游戏状态信息，并返回一个AI此时希望下棋的位置。\\
-此外还有部分开发过程中更好的测试启发式函数的结果或AI决策的结果所用的文件，它们在Release模式下不会被链接进主程序因此下文不
-再叙述。\\
+\end{table*}
+
 
 \subsection{\textbf{Minimax搜索和$\alpha-\beta$优化剪枝}}
 基本的Minimax搜索方法是用递归函数来实现的，在我们的程序中对应于searchmove.cpp的SearchStep函数。\\
-AI智能体部分对外提供一个接口SearchMove()，它返回一个Point结构体，其中包括x、y两个int类型的数据，代表一个点的坐标。\\
-SearchMove()函数没有形参，但是会读取define.h中定义的游戏棋盘、当前玩家、游戏历史记录等数据，组合成GameFullStatus类的对象，
-并将其的引用传递给SearchStep函数，由此开始对状态树的根节点（即当前局面）的搜索。\\
-SearchStep函数则表示对一个结点的完整搜索过程，其内部主要的内容包括产生合法行动的有序列表，用循环遍历这个列表、依次执行每
-个行动产生子状态，递归调用SearchStep搜索子状态结点，最后返回所有子状态的结果中预估效用最大（对于当前行动玩家是AI的搜索结
-点）或最小（对于当前行动玩家是人类的搜索结点）的一个，其对应的行动作为搜索结果返回给上层。\\
-受篇幅所限，我们不再单独展示未加入散列表优化、迭代深度搜索顺序优化、距离剪枝等措施的“纯粹的”Minimax\ $\alpha-\beta$算法，
-实际上“纯粹的”Minimax\ $\alpha-\beta$算法就是算法1删除第XXXXX行后的结果。\\
-分析代码可以知道，搜索每个结点的过程为首先产生该状态下的所有可行动作，然后按一定的顺序循环遍历这些可行动作、执行这些动作
-（也就是在棋盘上下棋）使状态发生改变，再对新的状态递归调用SearchStep函数进行搜索。\\
-而在搜索当前玩家为AI的结点（$status.player\ ==\ $black）时，会从所有子节点返回的搜索结果中选择分数最大的一个作为本结点
-返回的搜索结果；反之在搜索当前玩家为人类的结点时则选择分数最小的子节点。\\
+一个很重要的事实是，$\alpha-\beta$算法的效果受到搜索子结点的先后顺序的影响十分严重，下面将对此作出分析。\\
+算法在搜索当前玩家为AI的结点（$status.player\ ==\ $black）时，会从所有子节点返回的搜索结果中选择分数最大的一
+个作为本结点返回的搜索结果；反之在搜索当前玩家为人类的结点时则选择分数最小的子节点。\\
 设$A$为一个当前玩家为AI的结点，$B_1, B_2, \dots , B_n$为它的子结点（显然它们的当前玩家均是人类）。那么如果记已经搜索完
 成 的$B_1, B_2, \dots , B_k-1$所返回的分数的最大值为$\alpha$，随后在进入$B_k$结点、循环遍历$B_k$的子结点的过程中，一旦
 发现任何子结点的值$\leq \alpha$，那么因为$b_k$会返回它的所有子结点的返回值的最小值，$b_k$最终返回的值必然也$\leq \alpha$，
@@ -220,372 +187,129 @@ SearchStep函数则表示对一个结点的完整搜索过程，其内部主要�
 \subsection{\textbf{散列表优化和迭代深度搜索}}
 为了进一步优化程序，我们使用了散列表优化和迭代深度搜索两种方法。\\
 散列表优化是在搜索的过程中，对完成搜索的每一个结点，将该结点的游戏状态、搜索层数、搜索结果分数和对应的最优行动等信息存储
-在散列表中。对于一个散列表而言，在其上存储一个数据和查找一个已经存在于其上的数据的时间复杂度均为$O(1)$，因而对于希望进行
+在散列表中。对于一个散列表而言，在其上存储一个数据和查找一个已经存在于其上的数据的时间复杂度均为$O(1)$，因而对于
 随机增删和查找的场景有着很好的适用性。但是利用散列表存储的前提是需要对棋局的状态产生一个整形的数值（称为键值）来描述它，
 这里我们选用的是Zobrist键值。\\
 Zobrist键值通过为棋盘上的每个位置、每个棋子分配64位随机整数，通过异或运算产生键值，能够实现当在棋盘上放置或撤下单颗棋子时
 可以在$O(1)$的时间内完成键值的计算，因而与需要遍历整个棋盘才能计算完成的键值计算算法相比具有很大的优势。\\
-在散列表方面，出于效率考虑，我们使用了C++标准库std::unordered_set，并在游戏开局前预先调整其内的散列表大小为3M，从而可以
+在散列表方面，出于效率考虑，我们使用了C++标准库std::unordered\_set，并在游戏开局前预先调整其内的散列表大小为3M，从而可以
 获得最优的效率。\\
-此外，在现实生活中，智能体做出决策的时间是有限的，因而进行固定深度的限定深度搜索很可能浪费一定的搜索时间。为了充分的利用
-给定的时间，我们引入了迭代深度搜索，即搜索所限定的深度随着时间递增：如果限定深度为$k-1$的搜索全部完成时给定的时间没有用尽，
-则立即开启一个限定深度为$k$的搜索；在搜索的过程中，在一定层次以上的结点处检查耗时，如果发现时间已经用尽则搜索函数立刻返回。\\
-但更重要的其实是，迭代深度搜索有利于在后续的搜索过程中更好的优化子结点的搜索顺序
-在“纯粹的”Minimax\ $\alpha-\beta$算法的基础上，对每个结点进行搜索前可以
+此外在现实中，智能体做出决策的时间是有限的。为了充分的利用
+给定的时间，我们引入了迭代深度搜索：如果限定深度为$k-1$的搜索完成时给定的时间没有用尽，
+则立即开启一个限定深度为$k$的搜索；在搜索的检查耗时，如果发现时间已经用尽则搜索函数立刻提前返回。\\
+但更重要的其实是，迭代深度搜索与散列表的结合有利于在后续的搜索过程中更好的优化子结点的搜索顺序。通常来讲，如果一个动作在浅层的搜索中被找
+到作为最优的行动，那么当搜索层次加深时，从概率的角度上，它仍然是深层搜索得到的最优行动的概率是很大的。因此，我们只需要在散
+列表的表项中同时保存搜索结果的分数和行动两项数据，即可以在深层搜索中查到到刚刚浅层搜索所找到的最优行动并优先搜索。\\
+综上所述，散列表中的数据内容定义如下：
+\begin{quote}
+       struct HashTableItem \{\\
+              \hspace*{0.6cm} unsigned long long zobrist; // zobrist键值 \\
+              \hspace*{0.6cm} int depth; // 该搜索记录产生时对应的深度 \\
+              \hspace*{0.6cm} int score; // 搜索结果的分数 \\
+              \hspace*{0.6cm} int scoreType; // 分数的类型，有准确结果、alpha结果、beta结果三种可能 \\
+              \hspace*{0.6cm} Point bestMove; // 搜索结果对应的行动的下棋位置 \\
+       \};
+\end{quote}
 
-\subsection{\textbf{合法行动有序列表的产生（CreateMoves模块）}}
+\subsection{\textbf{基于距离的合法行动有序列表的产生、排序（CreateMoves模块）与剪枝}}
 五子棋的一般经验表明，在大多数情况下效用高的下棋位置要么是偏向进攻的，即延长自己已经有的连珠使其接近五连珠；
 要么是防守的，即破坏、截断对手的连珠，避免其在未来成为五连珠。无论哪种情况，我们往往都在自己现有的棋子周边或对方现有
 的棋子周边下棋，而一般不会在距离任何现有棋子都很远的空位置下棋。进一步的如果考虑到局势的进展，往往在一个“交战中心”，即双方
 最近几回合下棋位置的附近下棋得到的效用是相对高的。\\
 因此，在产生合法行动的有序列表和安排它们的初始搜索顺序时，我们计算每个空位置到最近两回合的下棋位置的距离最小值，并进行升序
-排列产生搜索顺序，如算法1所示。
+排列产生搜索顺序，如算法1所示。\\
 \begin{algorithm}
-       \algsetup{\tiny}
-       \scriptsize
-       \caption{产生合法行动的有序列表}
-       \begin{algorithmic}[1] %每行显示行号
-              \Require 当前完整状态$status$（包括棋盘$status.board$、当前行动玩家$status.player$等、历史记录$status.history$等）
-              \Ensure 所有合法行动组成的有序列表$result$
-              \Function {MakeMoves}{$status$}
-                     \State $historyPoints = \{status.history[-1], status.history[-2]\}$
-                     \State $emptyPlaces = $棋盘上的所有空位置
-                     \ForAll {$place$ in $emptyPlaces$}
-                            \State 计算到$historyPoints$的距离的最小值$place.priority =\ $\Call{minDistanceTo}{historyPoints}
-                     \EndFor
-                     \State 按priority排序所有空位置$result =\ $\Call{SortByPriority}{$emptyPlaces$}
-                     \State \Return {$result$}
-              \EndFunction
-       \end{algorithmic}
+    \algsetup{\tiny}
+    \scriptsize
+    \caption{产生合法行动的有序列表}
+    \begin{algorithmic}[1] %每行显示行号
+        \Require 当前完整状态$status$（包括棋盘$status.board$、当前行动玩家$status.player$等、历史记录$status.history$等）
+        \Ensure 所有合法行动组成的有序列表$result$
+        \Function {MakeMoves}{$status$}
+        \State $historyPoints = \{status.history[-1], status.history[-2]\}$
+        \State $emptyPlaces = $棋盘上的所有空位置
+        \ForAll {$place$ in $emptyPlaces$}
+        \State 计算到$historyPoints$的距离的最小值$place.priority =\ $\Call{minDistanceTo}{$place, historyPoints$}
+        \EndFor
+        \State 按priority排序所有空位置$result =\ $\Call{SortByPriority}{$emptyPlaces$}
+        \State \Return {$result$}
+        \EndFunction
+    \end{algorithmic}
+\end{algorithm}
+上述的排序方法没有从根本上减小最坏情况下一个结点的分支数。然而分析可以知道，在最顶层结点处
+的$\alpha=-\infty, \beta=-\infty$，因此最顶层结点是必定会完成对所有子结点的遍历的，因此从根本上减小最坏情况结点的分支数
+对提高搜索效率有着重要的意义。事实上
+在大多数情况下，很少有一步效用很高的棋是远离棋盘上任何现有棋子的，因为这样的棋既不能起到进攻也不能起到防守的作用。因此可以
+在搜索时对某个空位置，判断其周边与其距离$\leq2$的范围内是否已有任何棋子，如果没有则跳过对这个
+空位置的搜索。\\
+
+\subsection{\textbf{搜索算法的最终实现（SearchMove模块）}}
+AI智能体部分对外提供一个接口SearchMove()，它返回一个Point结构体，其中包括x、y两个int类型的数据，代表一个点的坐标。\\
+SearchMove()函数没有形参，但是会读取define.h中定义的游戏棋盘、当前玩家、游戏历史记录等数据，组合成GameFullStatus类的对象；
+随后用一个循环迭代深度地调用SearchStep函数，由此开始对状态树的根节点（即当前局面）的搜索。\\
+而对状态树的搜索的核心在于SearchStep函数。SearchStep函数的一次调用表示对一个结点的完整搜索过程，其内部主要的内容包括产生
+合法行动的有序列表，用循环遍历这个列表、依次执行每个行动产生子状态，递归调用SearchStep搜索子状态结点，最后返回所有子状态
+的结果中最优的一个。其具体的算法如算法2所述。\\
+\begin{algorithm}
+    \algsetup{\tiny}
+    \scriptsize
+    \caption{搜索单个状态结点}
+    \begin{algorithmic}[1] %每行显示行号
+        \Require 当前完整状态$status$（包括棋盘$status.board$、当前行动玩家$status.player$等）、当前剩余深度$depth$
+        、上层$\alpha$、上层$\beta$
+        \Ensure 搜索结果$result$（包括评估分数$result.score$、对应哪个合法动作$result.move$）
+        \Function {SearchStep}{$status, depth, \alpha, \beta$}
+        \If {$depth == 0$}
+        \State 调用启发函数评估分值$result.score = $\Call{evaluate}{$status$}
+        \State \Return{$result.score$}
+        \EndIf
+        \State 产生所有合法行动的有序列表$legalMoves = $\Call{makemoves}{$status$}
+        \If {散列表存在一个项$item$，其对应的键值与当前状态相同}
+        \If {$item.depth \geq depth$}
+        \State \Return{item.score & item.bestMove}
+        \Else
+        \State 将$item.bestMove$在$legalMoves$中的位置移动到最开头
+        \EndIf
+        \EndIf
+        \If{$status.player ==\ $black}
+        \State $result.score = -\infty$
+        \ForAll {$legalmove$ in $legalmoves$}
+        \State \textbf{if}\ 到棋盘上任意其他棋子的最短距离\Call{minDistanceToAnyChess}{$legalmove$} $\ge2$ \ \textbf{then}\ \textbf{break}
+        \State $status.$\Call{putChess}{$legalmove$}
+        \State $curRes = $ \Call{SearchStep}{$status, depth - 1, \alpha, \beta$}
+        \State $status.$\Call{unputChess}{$legalmove$}
+        \State \textbf{if}\ {已经超时} \ \textbf{then}\ \textbf{break}
+        \If {$curRes.score > result.score$}
+        \State $result = curRes$
+        \State $\alpha = $ \Call{max}{$\alpha, result.score$}
+        \EndIf
+        \State \textbf{if}\ {$result.score >= \beta$} \ \textbf{then}\ \textbf{break}
+        \EndFor
+        \EndIf
+        \If{$status.player ==\ $white}
+        \State $result.score = +\infty$
+        \ForAll {$legalmove$ in $legalmoves$}
+        \State \textbf{if}\ 到棋盘上任意其他棋子的最短距离\Call{minDistanceToAnyChess}{$legalmove$} $\ge2$ \ \textbf{then}\ \textbf{break}
+        \State $status.$\Call{putChess}{$legalmove$}
+        \State $curRes = $ \Call{SearchStep}{$status, depth - 1, \alpha, \beta$}
+        \State $status.$\Call{unputChess}{$legalmove$}
+        \State \textbf{if}\ {已经超时} \ \textbf{then}\ \textbf{break}
+        \If {$curRes.score < result.score$}
+        \State $result = curRes$
+        \State $\beta = $ \Call{min}{$\beta, result.score$}
+        \EndIf
+        \State \textbf{if}\ {$result.score >= \beta$} \ \textbf{then}\ \textbf{break}
+        \EndFor
+        \EndIf
+        \State \Return{$result$}
+        \EndFunction
+    \end{algorithmic}
 \end{algorithm}
 
 
-在概率意义上，通过剪除对距离棋盘上任何现有棋子距离都很远的空位置的搜索
-（这样的位置往往是不会得到很大的收益的），从而进一步降低每个搜索结点的平均分枝数，以加快搜索效率、加深在有限时间内可以搜索到的层数。\\
-
-
-
-
-\begin{algorithm}
-       \algsetup{\tiny}
-       \scriptsize
-       \caption{搜索单个状态结点}
-       \begin{algorithmic}[1] %每行显示行号
-              \Require 当前完整状态$status$（包括棋盘$status.board$、当前行动玩家$status.player$等）、当前剩余深度$depth$
-              、上层$\alpha$、上层$\beta$
-              \Ensure 搜索结果$result$（包括评估分数$result.score$、对应哪个合法动作$result.move$）
-              \Function {SearchStep}{$status, depth, \alpha, \beta$}
-              \If {$depth == 0$}
-              \State 调用启发函数评估分值$result.score = $\Call{evaluate}{$status$}
-              \State \Return{$result.score$}
-              \EndIf
-              \State 产生所有合法行动的有序列表$legalMoves = $\Call{makemoves}{$status$}
-              \If{$status.player ==\ $black}
-                     \State $result.score = -\infty$
-                     \ForAll {$legalmove$ in $legalmoves$}
-                            \State $status.$\Call{putChess}{$legalmove$}
-                            \State $curRes = $ \Call{SearchStep}{$status, depth - 1, \alpha, \beta$}
-                            \State $status.$\Call{unputChess}{$legalmove$}
-                            \If {$curRes.score > result.score$}
-                                   \State $result = curRes$
-                                   \State $\alpha = $ \Call{max}{$\alpha, result.score$}
-                            \EndIf
-                            \State \textbf{if}\ {$result.score >= \beta$} \ \textbf{then}\ \textbf{break}
-                     \EndFor
-              \EndIf
-              \If{$status.player ==\ $white}
-                     \State $result.score = +\infty$
-                     \ForAll {$legalmove$ in $legalmoves$}
-                            \State $status.$\Call{putChess}{$legalmove$}
-                            \State $curRes = $ \Call{SearchStep}{$status, depth - 1, \alpha, \beta$}
-                            \State $status.$\Call{unputChess}{$legalmove$}
-                            \If {$curRes.score < result.score$}
-                                   \State $result = curRes$
-                                   \State $\beta = $ \Call{min}{$\beta, result.score$}
-                            \EndIf
-                            \State \textbf{if}\ {$result.score >= \beta$} \ \textbf{then}\ \textbf{break}
-                     \EndFor
-              \EndIf
-              \State \Return{$result$}
-              \EndFunction
-       \end{algorithmic}
-\end{algorithm}
-
-\qquad MinimaxWe ha \qquad ve alrea \qquad dy seen several typeface changes in this sample.  You
-can indicate italicized words or phrases in your text with
-the command \texttt{{\char'134}textit}; emboldening with the
-command \texttt{{\char'134}textbf}
-and typewriter-style (for instance, for computer code) with
-\texttt{{\char'134}texttt}.  But remember, you do not
-have to indicate typestyle changes when such changes are
-part of the \textit{structural} elements of your
-article; for instance, the heading of this subsection will
-be in a sans serif\footnote{A third footnote, here.
-Let's make this a rather short one to
-see how it looks.} typeface, but that is handled by the
-document class file. Take care with the use
-of\footnote{A fourth, and last, footnote.}
-the curly braces in typeface changes; they mark
-the beginning and end of
-the text that is to be in the different typeface.
-
-You can use whatever symbols, accented characters, or
-non-English characters you need anywhere in your document;
-you can find a complete list of what is
-available in the \textit{\LaTeX\
-User's Guide}\cite{Lamport:LaTeX}.
-
-\subsection{Math Equations}
-You may want to display math equations in three distinct styles:
-inline, numbered or non-numbered display.  Each of
-the three are discussed in the next sections.
-
-\subsubsection{Inline (In-text) Equations}
-A formula that appears in the running text is called an
-inline or in-text formula.  It is produced by the
-\textbf{math} environment, which can be
-invoked with the usual \texttt{{\char'134}begin. . .{\char'134}end}
-construction or with the short form \texttt{\$. . .\$}. You
-can use any of the symbols and structures,
-from $\alpha$ to $\omega$, available in
-\LaTeX\cite{Lamport:LaTeX}; this section will simply show a
-few examples of in-text equations in context. Notice how
-this equation: \begin{math}\lim_{n\rightarrow \infty}x=0\end{math},
-set here in in-line math style, looks slightly different when
-set in display style.  (See next section).
-
-\subsubsection{Display Equations}
-A numbered display equation -- one set off by vertical space
-from the text and centered horizontally -- is produced
-by the \textbf{equation} environment. An unnumbered display
-equation is produced by the \textbf{displaymath} environment.
-
-Again, in either environment, you can use any of the symbols
-and structures available in \LaTeX; this section will just
-give a couple of examples of display equations in context.
-First, consider the equation, shown as an inline equation above:
-\begin{equation}\lim_{n\rightarrow \infty}x=0\end{equation}
-Notice how it is formatted somewhat differently in
-the \textbf{displaymath}
-environment.  Now, we'll enter an unnumbered equation:
-\begin{displaymath}\sum_{i=0}^{\infty} x + 1\end{displaymath}
-and follow it with another numbered equation:
-\begin{equation}\sum_{i=0}^{\infty}x_i=\int_{0}^{\pi+2} f\end{equation}
-just to demonstrate \LaTeX's able handling of numbering.
-
-\subsection{Citations}
-Citations to articles \cite{bowman:reasoning, clark:pct, braams:babel, herlihy:methodology},
-conference
-proceedings \cite{clark:pct} or books \cite{salas:calculus, Lamport:LaTeX} listed
-in the Bibliography section of your
-article will occur throughout the text of your article.
-You should use BibTeX to automatically produce this bibliography;
-you simply need to insert one of several citation commands with
-a key of the item cited in the proper location in
-the \texttt{.tex} file \cite{Lamport:LaTeX}.
-The key is a short reference you invent to uniquely
-identify each work; in this sample document, the key is
-the first author's surname and a
-word from the title.  This identifying key is included
-with each item in the \texttt{.bib} file for your article.
-
-The details of the construction of the \texttt{.bib} file
-are beyond the scope of this sample document, but more
-information can be found in the \textit{Author's Guide},
-and exhaustive details in the \textit{\LaTeX\ User's
-Guide}\cite{Lamport:LaTeX}.
-
-This article shows only the plainest form
-of the citation command, using \texttt{{\char'134}cite}.
-This is what is stipulated in the SIGS style specifications.
-No other citation format is endorsed.
-
-\subsection{Tables}
-Because tables cannot be split across pages, the best
-placement for them is typically the top of the page
-nearest their initial cite.  To
-ensure this proper ``floating'' placement of tables, use the
-environment \textbf{table} to enclose the table's contents and
-the table caption.  The contents of the table itself must go
-in the \textbf{tabular} environment, to
-be aligned properly in rows and columns, with the desired
-horizontal and vertical rules.  Again, detailed instructions
-on \textbf{tabular} material
-is found in the \textit{\LaTeX\ User's Guide}.
-
-Immediately following this sentence is the point at which
-Table 1 is included in the input file; compare the
-placement of the table here with the table in the printed
-dvi output of this document.
-
-\begin{table}
-\centering
-\caption{Frequency of Special Characters}
-\begin{tabular}{|c|c|l|} \hline
-Non-English or Math&Frequency&Comments\\ \hline
-\O & 1 in 1,000& For Swedish names\\ \hline
-$\pi$ & 1 in 5& Common in math\\ \hline
-\$ & 4 in 5 & Used in business\\ \hline
-$\Psi^2_1$ & 1 in 40,000& Unexplained usage\\
-\hline\end{tabular}
-\end{table}
-
-To set a wider table, which takes up the whole width of
-the page's live area, use the environment
-\textbf{table*} to enclose the table's contents and
-the table caption.  As with a single-column table, this wide
-table will ``float" to a location deemed more desirable.
-Immediately following this sentence is the point at which
-Table 2 is included in the input file; again, it is
-instructive to compare the placement of the
-table here with the table in the printed dvi
-output of this document.
-
-
-\begin{table*}
-\centering
-\caption{Some Typical Commands}
-\begin{tabular}{|c|c|l|} \hline
-Command&A Number&Comments\\ \hline
-\texttt{{\char'134}alignauthor} & 100& Author alignment\\ \hline
-\texttt{{\char'134}numberofauthors}& 200& Author enumeration\\ \hline
-\texttt{{\char'134}table}& 300 & For tables\\ \hline
-\texttt{{\char'134}table*}& 400& For wider tables\\ \hline\end{tabular}
-\end{table*}
-% end the environment with {table*}, NOTE not {table}!
-
-\subsection{Figures}
-Like tables, figures cannot be split across pages; the
-best placement for them
-is typically the top or the bottom of the page nearest
-their initial cite.  To ensure this proper ``floating'' placement
-of figures, use the environment
-\textbf{figure} to enclose the figure and its caption.
-
-This sample document contains examples of \textbf{.eps}
-and \textbf{.ps} files to be displayable with \LaTeX.  More
-details on each of these is found in the \textit{Author's Guide}.
-
-\begin{figure}
-\centering
-\epsfig{file=fly.eps}
-\caption{A sample black and white graphic (.eps format).}
-\end{figure}
-
-\begin{figure}
-\centering
-\epsfig{file=fly.eps, height=1in, width=1in}
-\caption{A sample black and white graphic (.eps format)
-that has been resized with the \texttt{epsfig} command.}
-\end{figure}
-
-
-As was the case with tables, you may want a figure
-that spans two columns.  To do this, and still to
-ensure proper ``floating'' placement of tables, use the environment
-\textbf{figure*} to enclose the figure and its caption.
-
-Note that either {\textbf{.ps}} or {\textbf{.eps}} formats are
-used; use
-the \texttt{{\char'134}epsfig} or \texttt{{\char'134}psfig}
-commands as appropriate for the different file types.
-
-\subsection{Theorem-like Constructs}
-Other common constructs that may occur in your article are
-the forms for logical constructs like theorems, axioms,
-corollaries and proofs.  There are
-two forms, one produced by the
-command \texttt{{\char'134}newtheorem} and the
-other by the command \texttt{{\char'134}newdef}; perhaps
-the clearest and easiest way to distinguish them is
-to compare the two in the output of this sample document:
-
-This uses the \textbf{theorem} environment, created by
-the\linebreak\texttt{{\char'134}newtheorem} command:
-\newtheorem{theorem}{Theorem}
-\begin{theorem}
-Let $f$ be continuous on $[a,b]$.  If $G$ is
-an antiderivative for $f$ on $[a,b]$, then
-\begin{displaymath}\int^b_af(t)dt = G(b) - G(a).\end{displaymath}
-\end{theorem}
-
-The other uses the \textbf{definition} environment, created
-by the \texttt{{\char'134}newdef} command:
-\newdef{definition}{Definition}
-\begin{definition}
-If $z$ is irrational, then by $e^z$ we mean the
-unique number which has
-logarithm $z$: \begin{displaymath}{\log e^z = z}\end{displaymath}
-\end{definition}
-
-\begin{figure}
-\centering
-\psfig{file=rosette.ps, height=1in, width=1in,}
-\caption{A sample black and white graphic (.ps format) that has
-been resized with the \texttt{psfig} command.}
-\end{figure}
-
-Two lists of constructs that use one of these
-forms is given in the
-\textit{Author's  Guidelines}.
-
-\begin{figure*}
-\centering
-\epsfig{file=flies.eps}
-\caption{A sample black and white graphic (.eps format)
-that needs to span two columns of text.}
-\end{figure*}
-and don't forget to end the environment with
-{figure*}, not {figure}!
-
-There is one other similar construct environment, which is
-already set up
-for you; i.e. you must \textit{not} use
-a \texttt{{\char'134}newdef} command to
-create it: the \textbf{proof} environment.  Here
-is a example of its use:
-\begin{proof}
-Suppose on the contrary there exists a real number $L$ such that
-\begin{displaymath}
-\lim_{x\rightarrow\infty} \frac{f(x)}{g(x)} = L.
-\end{displaymath}
-Then
-\begin{displaymath}
-l=\lim_{x\rightarrow c} f(x)
-= \lim_{x\rightarrow c}
-\left[ g{x} \cdot \frac{f(x)}{g(x)} \right ]
-= \lim_{x\rightarrow c} g(x) \cdot \lim_{x\rightarrow c}
-\frac{f(x)}{g(x)} = 0\cdot L = 0,
-\end{displaymath}
-which contradicts our assumption that $l\neq 0$.
-\end{proof}
-
-Complete rules about using these environments and using the
-two different creation commands are in the
-\textit{Author's Guide}; please consult it for more
-detailed instructions.  If you need to use another construct,
-not listed therein, which you want to have the same
-formatting as the Theorem
-or the Definition\cite{salas:calculus} shown above,
-use the \texttt{{\char'134}newtheorem} or the
-\texttt{{\char'134}newdef} command,
-respectively, to create it.
-
-\subsection*{A {\secit Caveat} for the \TeX\ Expert}
-Because you have just been given permission to
-use the \texttt{{\char'134}newdef} command to create a
-new form, you might think you can
-use \TeX's \texttt{{\char'134}def} to create a
-new command: \textit{Please refrain from doing this!}
-Remember that your \LaTeX\ source code is primarily intended
-to create camera-ready copy, but may be converted
-to other forms -- e.g. HTML. If you inadvertently omit
-some or all of the \texttt{{\char'134}def}s recompilation will
-be, to say the least, problematic.
-
-\section{启发式函数}
+\section{\textbf{启发式函数}}
 在现实情况中，应该在合理的时间内做出决策。为实现此目的，应尽早截断搜索，将启发式评估函数用于搜索中的状态，有效的将非终止结点转变为终止结点。\\
-更改后的启发式搜索如下：\\
+启发式搜索如下：\\
 \begin{tiny}
 HMinmax(s,d)=\\
 \begin{equation}
@@ -604,7 +328,7 @@ min_{a\in Actions(s)}HMinmax(Result(s,a),d+1), & player(s)=MIN.
 \end{tiny}
 \\
 在五子棋人机对弈中，启发式函数可以通过对关键棋型的统计来得到局面形势估计值，某一方的关键棋型越多，在对弈中更有主动权，优势也就更大。\\
-\subsection{关键棋型介绍}
+\subsection{\textbf{关键棋型介绍}}
 五子棋中的基本棋型有连五、活四、冲四、活三、眠三、活二（眠二对局面影响很小，此处不计入）。\\
 1.连五棋型，此时已经可以判断胜负,示例如下图。\\
 2.活四棋型，有两个连五点，示例如下图。\\
@@ -639,12 +363,14 @@ min_{a\in Actions(s)}HMinmax(Result(s,a),d+1), & player(s)=MIN.
 	}
 \end{figure}
 
-\subsection{棋型统计策略}
+\subsection{\textbf{棋型统计策略}}
 对棋子进行遍历，棋子有可能在四个方向（）从左到右，从上到小，从左上到右下，从右上到左下）上形成基本棋型，对四个方向进行搜索，每个方向取以该棋子为中心的9个位置，得到位置数组，对这个数组进行棋型搜索，即可得到该棋子形成的所有棋型数目。\\
 需要注意的是，为了防止棋型的重复计入，我们需要记录已经被标记过的棋盘位置，下一次遍历到此位置时便不再查找此棋子附近形成的棋型。\\
 伪代码如下：\\
 \begin{tiny}
 \begin{algorithm}
+       \algsetup{\tiny}
+       \scriptsize
 	\caption{棋型统计策略}
 	\begin{algorithmic}[1] %每行显示行号
 		\Require  当前棋盘 $board$、当前棋子坐标$(i,j)$、方向数组$dir_s$
@@ -664,7 +390,7 @@ min_{a\in Actions(s)}HMinmax(Result(s,a),d+1), & player(s)=MIN.
 \end{algorithm}
 \end{tiny}
 
-\subsection{局面估值策略}
+\subsection{\textbf{局面估值策略}}
 当我们对棋局的所有棋子进行了棋型统计之后，我们便容易得到黑棋和白棋的基本棋型的数目总值。局面的估值应该是己方棋型权值与对方棋型权值的差。\\
 根据棋型的数目进行局面估值有两种策略，一种是对能够在几步之内分出胜负的棋型，也就是必杀，对这种棋型，我们直接返回一个较大的对局面的估值；一种是在当前情况下暂时没有办法分出胜负的棋型，对这种的棋型，我们通过统计基本棋型的数量，与设置的棋型权值相乘，返回权值和。对这两种棋型的区分可以优化后续搜索的层数。\\
 值得注意的是，下棋的顺序会影响到局面的估值，若当前是黑棋的回合，黑棋还未下，而白棋已经下过，那么相同的棋型白棋和黑棋的估值应该就有所不同。例如，白棋有活三，黑棋有活三，此时黑棋不构成必杀，但白棋显然构成必杀，因为白棋下一步就可以将活三变为活四。\\
@@ -693,11 +419,18 @@ min_{a\in Actions(s)}HMinmax(Result(s,a),d+1), & player(s)=MIN.
      黑活二     &  40\\ \hline
 	\end{tabular}
 \end{table}
-\section{优化}
-\subsection{悔棋和复盘}
-维护一个下棋历史数组。\\
-悔棋时，撤销最后下的两手棋，数组弹出元素，更新棋盘。\\
-将复盘的下棋历史存储在同目录的ChessSave.txt下，每次棋局结束时，提示是否要存盘，若存盘则将下棋历史存储在ChessSave.txt中，每次棋局开始时，提示是否要复盘，若需要复盘则播放ChessSave.txt中的历史记录。\\
+\section{其他}
+\subsection{游戏结束的判断}
+在每一次下棋后，立刻在八个方向、距离为4的范围内查找与刚刚被下的棋子连续的同一方棋子的个数，从而计算出是否有五连珠。由于
+每一回合下棋后都会进行这一判断，因此这一方法足以准确判断出游戏是否结束的结果。另外，若棋盘下满无人胜利，则判断为和棋。
+\subsection{悔棋}
+维护一个下棋历史数组。悔棋时，撤销最后下的两手棋，数组弹出元素，更新棋盘。\\
+\subsection{复盘}
+将复盘的下棋历史存储在同目录的ChessSave.txt下，每次棋局结束时，提示是否要存盘，若存盘则将下棋历史存储在ChessSave.txt中，
+每次棋局开始时，提示是否要复盘，若需要复盘则播放ChessSave.txt中的历史记录。\\
+
+\section{实验}
+
 %ACKNOWLEDGMENTS are optional
 \section{Acknowledgments}
 This section is optional; it is a location for you
